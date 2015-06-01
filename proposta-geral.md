@@ -1,4 +1,4 @@
-#Proposta Geral;
+#Proposta Geral\b;
 Desenvolvimento de Game Educativo em Linguagem C;
 Jogo de Plataforma 2D;
 Uso de conceitos e teorias de Eletricidade/Eletrônica;
