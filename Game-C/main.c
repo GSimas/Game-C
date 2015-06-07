@@ -32,6 +32,7 @@ int main()
     const int FPS = 60;
     bool done = false;
     bool redraw = true;
+    const int gravity = 1;
 
     //object variables
     Player player;
@@ -77,11 +78,15 @@ int main()
     	{
     		done = true;
     	}
+        //evento do timer (vai entrar nesse else if sempre, a não ser que feche a janela)
         else if(ev.type == ALLEGRO_EVENT_TIMER)
 		{
             redraw = true;
-            if(keys[UP])
-    		PlayerJump(player);
+            if(keys[UP] && player.jump) {
+                player.vely = -player.jumpSpeed;
+                player.jump = false;
+            }
+
     		//if(keys[Q])
     		      //PlayerShootQ
     		//if(keys[W])
@@ -119,6 +124,7 @@ int main()
     		{
     			case ALLEGRO_KEY_UP:
     				keys[UP] = false;
+                    //player.vely = 0;
     				break;
     			/*case ALLEGRO_KEY_Q:
     				keys[Q] = false;
@@ -134,6 +140,8 @@ int main()
 
         if(redraw && al_is_event_queue_empty(event_queue))
 		{
+            player.y += player.vely;
+
 			redraw = false;
 
 			DrawPlayer(player);
@@ -141,8 +149,19 @@ int main()
 			al_flip_display();
 			al_clear_to_color(al_map_rgb(0,0,0));
 		}
+        //adicionar gravidade ao pulo
+        if (player.vely <= player.jumpSpeed && !player.jump) {
+            player.vely += gravity;
+            if (player.vely == player.jumpSpeed) {
+                player.y = HEIGHT;
+                player.vely = 0;
+                player.jump = true;
+            }
+        }
     }
 
+    al_destroy_event_queue(event_queue);
+    al_destroy_timer(timer);
     al_destroy_display(display);
 
     return 0;
@@ -154,6 +173,10 @@ void InitPlayer (Player &player) {
     player.y = HEIGHT;
     player.lives = 3;
     player.speed = 7;
+    player.jumpSpeed = 15;
+    player.jump = true;
+    player.velx = 0;
+    player.vely = 0;
     player.bundx = 6;
     player.boundy = 7;
     player.score = 0;
@@ -161,11 +184,4 @@ void InitPlayer (Player &player) {
 
 void DrawPlayer(Player &player) {
     al_draw_filled_rectangle(player.x, player.y, player.x + 40, player.y - 70 , al_map_rgb(0, 150, 255));
-}
-
-void PlayerJump(Player &player)
-{
-	player.y -= player.speed;
-	if(player.y < 0)
-		player.y = 0;
 }
