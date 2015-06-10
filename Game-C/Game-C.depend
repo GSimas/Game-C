@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1433897662 source:c:\users\gustavo\documents\ifsc\programação c\game-c\game-c\game-c\main.c
+1433727640 source:c:\users\gustavo\documents\ifsc\programação c\game-c\game-c\game-c\main.c
 	<allegro5/allegro.h>
 	<allegro5/allegro_primitives.h>
 	<allegro5/base.h>
@@ -237,5 +237,5 @@
 1372639132 c:\users\gustavo\documents\ifsc\0-softwares\codeblocks\allegro-5.0.10-mingw-4.7.0\include\allegro5\allegro_native_dialog.h
 	"allegro5/allegro.h"
 
-1433892820 c:\users\gustavo\documents\ifsc\programação c\game-c\game-c\game-c\objects.h
+1433726276 c:\users\gustavo\documents\ifsc\programação c\game-c\game-c\game-c\objects.h
 
