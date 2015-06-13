@@ -1,9 +1,14 @@
 # depslib dependency file v1.0
-1433973636 source:c:\users\gustavo\documents\ifsc\programação c\game-c\game-c\game-c\main.c
+1434228564 source:c:\users\gustavo\documents\ifsc\programação c\game-c\game-c\game-c\main.c
+	<time.h>
+	<stdlib.h>
+	<stdio.h>
 	<allegro5/allegro.h>
 	<allegro5/allegro_primitives.h>
 	<allegro5/base.h>
 	<allegro5/allegro_native_dialog.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
 	"objects.h"
 
 1372639132 c:\users\gustavo\documents\ifsc\0-softwares\codeblocks\allegro-5.0.10-mingw-4.7.0\include\allegro5\allegro.h
@@ -238,4 +243,11 @@
 	"allegro5/allegro.h"
 
 1433973611 c:\users\gustavo\documents\ifsc\programação c\game-c\game-c\game-c\objects.h
+
+1372639132 c:\users\gustavo\documents\ifsc\0-softwares\codeblocks\allegro-5.0.10-mingw-4.7.0\include\allegro5\allegro_font.h
+	"allegro5/allegro.h"
+
+1362338300 c:\users\gustavo\documents\ifsc\0-softwares\codeblocks\allegro-5.0.10-mingw-4.7.0\include\allegro5\allegro_ttf.h
+	"allegro5/allegro.h"
+	"allegro5/allegro_font.h"
 
