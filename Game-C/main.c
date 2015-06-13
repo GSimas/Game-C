@@ -1,14 +1,14 @@
 /*********************************
-*Programa��o em linguagem C
-*Clarice Ribeiro e Gustavo clean:
-Simas
-*V0.3
-*Titulo: "N�O DEFINIDO"
+*Programação em linguagem C
+*Clarice Ribeiro e Gustavo Simas
+*V0.6.13
+*Titulo: "NÃO DEFINIDO"
 *********************************/
 
 //inclus�o de bibliotecas
 #include <time.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/base.h>
@@ -23,6 +23,7 @@ const int HEIGHT = 600; //altura display
 const int gravity = 1;
 float size_enemy_red;
 float size_enemy_blue;
+int i=255;
 enum KEYS {UP, DOWN, LEFT, RIGHT, Q, W, E, R};
 bool keys[8] = {false, false, false, false, false, false, false, false};
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +68,7 @@ void PlayerColisionEnemyBlue(Player &player, Enemy_blue &enemyblue, float &size_
 
 //outros prot�tipos
 void ResetPlayer(Player &player);
+int Change(int i, Player &player);
 
 //main
 int main()
@@ -88,10 +90,10 @@ int main()
     ALLEGRO_DISPLAY *display;
     ALLEGRO_EVENT_QUEUE *event_queue = NULL;
     ALLEGRO_TIMER *timer = NULL;
-    //ALLEGRO_FONT *font = NULL;
+    ALLEGRO_FONT *title_font = NULL;
+    ALLEGRO_FONT *medium_font = NULL;
 
 ////////////////////////////////////////////////////////////////////////
-
     //initializate functions
     if(!al_init())
         return -1; //caso d� erro ao inicializar allegro
@@ -105,10 +107,23 @@ int main()
     al_init_primitives_addon();
     al_init_font_addon();
     al_init_ttf_addon();
+    if (!al_init_ttf_addon())
+    {
+        printf("Falha ao inicializar addon allegro_ttf.\n");
+        return -1;
+    }
     al_install_keyboard();
 
     event_queue = al_create_event_queue();
     timer = al_create_timer(1.0 / FPS);
+    medium_font = al_load_font("EHSMB.ttf", 50, 0);
+    title_font = al_load_font("French Electric Techno.ttf", 200, 0);
+    if (!title_font)
+    {
+        al_destroy_display(display);
+        printf("Falha ao carregar fonte.\n");
+        return -1;
+    }
 
     //Game Init
     InitPlayer(player); //chamar fun��o que "inicia" player
@@ -152,6 +167,9 @@ int main()
                 player.velx = player.speed;
                 player.moving = true;
             }
+            i=Change(i, player);
+            al_clear_to_color(al_map_rgb(i*2,i*2,i*2));
+            al_draw_text(title_font, al_map_rgb(i,0,0), WIDTH/2, 150, ALLEGRO_ALIGN_CENTRE, "SHOCK EFFECT");
             UpdateShootQ(shootQ);
             UpdateShootW(shootW);
             //UpdateShootE(&shootE);
@@ -161,6 +179,9 @@ int main()
             PlayerColisionEnemyRed(player, enemyred, size_enemy_red);
             UpdateEnemyRed(enemyred, size_enemy_red, player);
             UpdateEnemyBlue(enemyblue, size_enemy_blue, player);
+            al_draw_textf(medium_font, al_map_rgb(255, 255, 255), 50, 20, ALLEGRO_ALIGN_LEFT, "Score: %d", player.score);
+            al_draw_textf(medium_font, al_map_rgb(255, 255, 255), WIDTH - 50, 20, ALLEGRO_ALIGN_RIGHT, "Lives: %d", player.lives);
+
 
             ResetPlayer(player);
         }
@@ -247,14 +268,16 @@ int main()
             //DrawShootE(&shootE);
             DrawEnemyRed(enemyred, size_enemy_red, player);
             DrawEnemyBlue(enemyblue, size_enemy_blue, player);
-
             al_flip_display();
+            if(i==0)
             al_clear_to_color(al_map_rgb(0,0,0));
         }
     }
 
     al_destroy_event_queue(event_queue);
     al_destroy_timer(timer);
+    al_destroy_font(title_font);
+    al_destroy_font(medium_font);
     al_destroy_display(display);
 
     return 0;
@@ -286,6 +309,7 @@ void InitPlayer(Player &player)
     player.boundx = 40;
     player.boundy = 70;
     player.score = 0;
+    i=0;
 };
 
 //fun��o para desenhar jogador
@@ -294,6 +318,68 @@ void DrawPlayer(struct Player &player)
     if(player.alive)
     {
         al_draw_filled_rectangle(player.x, player.y, player.x + 40, player.y - 70 , al_map_rgb(0, 175, 255));
+    }
+}
+
+//fun��o para pulo do jogador
+void PlayerJump(struct Player &player)
+{
+//adicionar gravidade ao pulo
+    if (player.vely <= player.jumpSpeed && !player.jump)
+    {
+        player.vely += gravity;
+        player.y += player.vely;
+        if (player.vely == player.jumpSpeed)
+        {
+            player.y = HEIGHT;
+            player.vely = 0;
+            player.jump = true;
+        }
+    }
+}
+
+//Andar para direita
+void PlayerRight(struct Player &player)
+{
+    player.x += player.speed;
+    player.moving = true;
+}
+
+//andar para esquerda
+void PlayerLeft(struct Player &player)
+{
+    player.x -= player.speed;
+    player.moving = true;
+}
+
+//fun��o para reiniciar jogador
+void ResetPlayer(struct Player &player)
+{
+    if(player.lives <= 0)
+    {
+        player.alive = false;
+    }
+    if(player.x + player.boundx < -80)
+    {
+        player.alive = false;
+    }
+    if(player.alive == false)
+    {
+        player.x = 10;
+        player.y = HEIGHT;
+        player.lives = 3;
+        player.speed = 7;
+        player.jumpSpeed = 15;
+        player.jump = true;
+        player.moving = false;
+        player.colision = false;
+        player.alive = true;
+        player.velx = 40;
+        player.vely = 70;
+        player.boundx = 40;
+        player.boundy = 70;
+        player.score = 0;
+        i=0;
     }
 }
 
@@ -469,37 +555,6 @@ void UpdateEnemyBlue(struct Enemy_blue &enemyblue, float &size_enemy_blue, struc
     }
 }
 
-//fun��o para pulo do jogador
-void PlayerJump(struct Player &player)
-{
-//adicionar gravidade ao pulo
-    if (player.vely <= player.jumpSpeed && !player.jump)
-    {
-        player.vely += gravity;
-        player.y += player.vely;
-        if (player.vely == player.jumpSpeed)
-        {
-            player.y = HEIGHT;
-            player.vely = 0;
-            player.jump = true;
-        }
-    }
-}
-
-//Andar para direita
-void PlayerRight(struct Player &player)
-{
-    player.x += player.speed;
-    player.moving = true;
-}
-
-//andar para esquerda
-void PlayerLeft(struct Player &player)
-{
-    player.x -= player.speed;
-    player.moving = true;
-}
-
 //fun��o de colis�o de tiro Q com inimigo vermelho
 void ShootQColisionEnemyRed(struct Shoot &shootQ, struct Enemy_red &enemyred, float &size_enemy_red, struct Player &player)
 {
@@ -546,36 +601,6 @@ void ShootWColisionEnemyBlue(struct Shoot &shootW, struct Enemy_blue &enemyblue,
     }
 }
 
-//fun��o para reiniciar jogador
-void ResetPlayer(struct Player &player)
-{
-    if(player.lives <= 0)
-    {
-        player.alive = false;
-    }
-    if(player.x + player.boundx < -80)
-    {
-        player.alive = false;
-    }
-    if(player.alive == false)
-    {
-        player.x = 10;
-        player.y = HEIGHT;
-        player.lives = 3;
-        player.speed = 7;
-        player.jumpSpeed = 15;
-        player.jump = true;
-        player.moving = false;
-        player.colision = false;
-        player.alive = true;
-        player.velx = 40;
-        player.vely = 70;
-        player.boundx = 40;
-        player.boundy = 70;
-        player.score = 0;
-    }
-}
-
 //fun��o para colis�o de jogador com inimigo vermelho
 void PlayerColisionEnemyRed(struct Player &player, struct Enemy_red &enemyred, float &size_enemy_red)
 {
@@ -595,7 +620,7 @@ void PlayerColisionEnemyRed(struct Player &player, struct Enemy_red &enemyred, f
     }
 }
 
-//fun��o para colis�o de jogador com inimigo azul
+//função para colisão de jogador com inimigo azul
 void PlayerColisionEnemyBlue(struct Player &player, struct Enemy_blue &enemyblue, float &size_enemy_blue)
 {
     if(enemyblue.alive && player.alive)
@@ -613,3 +638,19 @@ void PlayerColisionEnemyBlue(struct Player &player, struct Enemy_blue &enemyblue
         }
     }
 }
+
+int Change(int i, struct Player &player)
+{
+    if(i>1)
+        i-=1;
+    if(i==0)
+        i=255;
+    return i;
+}
+
+
+/*
+void DrawScoreText(struct Player &player)
+{
+    al_draw_textf(font, al_map_rgb(255, 255, 255), 50, 20, ALLEGRO_ALIGN_LEFT, "Score: %d", player.score);
+}*/
