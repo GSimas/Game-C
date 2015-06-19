@@ -1,15 +1,13 @@
-#ifndef FUNCTIONS_H_INCLUDED
-#define FUNCTIONS_H_INCLUDED
-
-
+#ifndef __FUNCTIONS_H_INCLUDED
+#define __FUNCTIONS_H_INCLUDED
 
 //Funções Player
-void InitPlayer(Player &player, int *textColor);
+void InitPlayer(Player &player, int *text_color);
 void DrawPlayer(Player &player);
 void PlayerJump(Player &player, bool *UP);
-void PlayerRight(Player &player);
-void PlayerLeft(Player &player);
-void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemies, Enemy_blue enemyblue[], Obstacle &obstacle, Boss boss[], int *textColor);
+void PlayerRight(Player &player, bool *RIGHT);
+void PlayerLeft(Player &player, bool *LEFT);
+void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue, Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color);
 void TransportPlayer(Player &player);
 
 //Funções shootQ
@@ -28,7 +26,7 @@ void UpdateShootW(struct Shoot &shootW, struct Player &player);
 void InitShootE(Shoot &shootE);
 void DrawShootE(Shoot &shootE, Player &player);
 void FireShootE(Shoot &shootE, Player &player);
-void UpdateShootE(Shoot &shootE);
+void UpdateShootE(Shoot &shootE, Player &player);
 
 //Funções enemyred
 void InitEnemyRed(struct Enemy_red enemyred[], int *num_enemies);
@@ -47,7 +45,7 @@ void PlayerColisionEnemyBlue(struct Player &player, struct Enemy_blue enemyblue[
 //funções Boss
 void InitBoss(struct Boss boss[], int *num_boss);
 void DrawBoss(struct Boss boss[], int *num_boss, struct Player &player);
-void UpdateBoss(struct Boss boss[], int *num_boss, struct Player &player, struct Enemy_red enemyred[], int *num_red, struct Enemy_blue enemyblue[], int *num_blue);
+void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_red, struct Enemy_blue enemyblue[], int *num_blue);
 void PlayerColisionBoss(struct Player &player, struct Boss boss[], int *num_boss);
 void ShootColisionBoss(struct Shoot &shootW, struct Shoot &shootQ, struct Boss boss[], int *num_boss, struct Player &player);
 
@@ -58,7 +56,7 @@ void UpdateObstacle(Obstacle &obstacle, ALLEGRO_FONT *medium_font, Player &playe
 void PlayerColisionObstacle(Player &player, Obstacle &obstacle);
 
 //funções relacionadas a texto
-void Change(int *textColor, struct Player &player);
-void DrawText(ALLEGRO_FONT *title_font, ALLEGRO_FONT *medium_font, Player &player, Boss boss[], int *num_boss, int *textColor);
+void ChangeColor(int *text_color, struct Player &player, struct Boss boss[], int *num_boss, int *text_boss);
+void DrawText(ALLEGRO_FONT *title_font, ALLEGRO_FONT *medium_font, Player &player, Boss boss[], int *num_boss, int *text_color, int *text_boss);
 
 #endif // FUNCTIONS_H_INCLUDED

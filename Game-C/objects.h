@@ -2,7 +2,7 @@
 #define __objects_h
 
 //obj IDS (para indentificar o objeto)
-enum IDS{PLAYER, ENEMY, BULLET};
+enum IDS{PLAYER, ENEMYRED, ENEMYBLUE, BOSS, SHOOTQ, SHOOTW, SHOOTE, OBSTACLE};
 
 //estrutura do player
 struct Player {
@@ -16,37 +16,62 @@ struct Player {
     bool moving;
     bool colision;
     bool alive;
+    bool inverted;
+    bool shield;
     int velx;
     int vely;
     int boundx; //(?) descobrir ainda
     int boundy; //(?) descobrir ainda
     int score;
+    int death_counter;
 };
 
 struct Enemy_red {
-    int x;
-    int y;
+    char ID;
+    float x;
+    float y;
     float speed;
-    int velx;
+    float size_enemy;
+    float velx;
     int vely;
     int boundx;
     int boundy;
+    int real_size_enemy;
     bool moving;
-    bool jumping;
     bool alive;
 };
 
 struct Enemy_blue {
-    int x;
-    int y;
+    char ID;
+    float x;
+    float y;
     float speed;
+    float size_enemy;
     int velx;
     int vely;
     int boundx;
     int boundy;
+    int real_size_enemy;
     bool moving;
-    bool jumping;
     bool alive;
+};
+
+struct Boss {
+    char ID;
+    float x;
+    float real_x;
+    float y;
+    float real_y;
+    float speed;
+    float size_boss;
+    int velx;
+    int vely;
+    int boundx;
+    int boundy;
+    int real_size_boss;
+    int lives;
+    bool alive;
+    bool lived;
 };
 
 struct Shoot {
@@ -54,7 +79,22 @@ struct Shoot {
     int x;
     int y;
     int speed;
+    int temp;
+    int s;
     bool live;
+};
+
+struct Obstacle{
+    char ID;
+    float x;
+    float y;
+    float speed;
+    float velx;
+    float vely;
+    int size_obst;
+    int real_size_obst;
+    int score;
+    bool alive;
 };
 
 #endif
