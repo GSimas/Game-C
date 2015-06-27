@@ -9,12 +9,17 @@
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+//#include <allegro5/bitmap.h>
+#include <allegro5/allegro_image.h>
 #include "objects.h" //arquivo de objetos
 
 //GLOBALS
-extern const int WIDTH = 1200; //largura display
-extern const int HEIGHT = 600; //altura display
+extern int WIDTH; //largura display
+extern int HEIGHT; //altura display
 extern const int GRAVITY = 1; //gravidade padrao em 1
+extern int back_x;
+extern int back_y;
+
 
 //funcao para iniciar jogador
 void InitPlayer(Player &player, int *text_color)
@@ -33,19 +38,66 @@ void InitPlayer(Player &player, int *text_color)
     player.shield = false;
     player.velx = 0;
     player.vely = 1;
-    player.boundx = 40;
-    player.boundy = 70;
+    player.boundx = 62;
+    player.boundy = 80;
     player.score = 0;
     player.death_counter = 0;
     *text_color=0;
 };
 
-//funcao para desenhar jogador
-void DrawPlayer(struct Player &player)
+void InitScientist(SpriteScientist &scientist)
+{
+    scientist.frameCount = 0;
+    scientist.frameDelay = 12;
+    scientist.frameWidth = 62;
+    scientist.frameHeight = 80;
+    scientist.maxFrame = 2;
+    scientist.curFrameA = 0;
+    scientist.curFrameB = 0;
+    scientist.curFrameC = 0;
+
+}
+void DrawScientist(Player &player, SpriteScientist &scientist, bool *LEFT, bool *RIGHT)
 {
     if(player.alive)
     {
-        al_draw_filled_rectangle(player.x, player.y, player.x + 40, player.y - 70 , al_map_rgb(0, 175, 255));
+        if(*LEFT)
+        {
+            al_draw_bitmap_region(scientist.bitmap, scientist.curFrameB*scientist.frameWidth, 80, scientist.frameWidth, scientist.frameHeight, player.x, player.y - 80, 0);
+            scientist.frameCount++;
+            if(scientist.frameDelay == scientist.frameCount) {
+                scientist.curFrameB++;
+                scientist.frameCount = 0;
+                if (scientist.curFrameB > scientist.maxFrame) {
+                    scientist.curFrameB = 0;
+                }
+            }
+
+        }
+        else if(*RIGHT)
+        {
+            al_draw_bitmap_region(scientist.bitmap, scientist.curFrameC*scientist.frameWidth, 160, scientist.frameWidth, scientist.frameHeight, player.x, player.y - 80, 0);
+            scientist.frameCount++;
+            if(scientist.frameDelay == scientist.frameCount) {
+                scientist.curFrameC++;
+                scientist.frameCount = 0;
+                if (scientist.curFrameC > scientist.maxFrame) {
+                    scientist.curFrameC = 0;
+                }
+            }
+        }
+        else
+        {
+            al_draw_bitmap_region(scientist.bitmap, scientist.curFrameA*scientist.frameWidth, 240, scientist.frameWidth, scientist.frameHeight, player.x, player.y - 80, 0);
+            scientist.frameCount++;
+            if(scientist.frameDelay == scientist.frameCount) {
+                scientist.curFrameA++;
+                scientist.frameCount = 0;
+                if (scientist.curFrameA > scientist.maxFrame) {
+                    scientist.curFrameA = 0;
+                }
+            }
+        }
     }
 }
 
@@ -150,8 +202,8 @@ void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_
         player.shield = false;
         player.velx = 0;
         player.vely = 1;
-        player.boundx = 40;
-        player.boundy = 70;
+        player.boundx = 62;
+        player.boundy = 80;
         player.score = 0;
         player.death_counter = 0;
         *text_color=0;
@@ -215,7 +267,7 @@ void TransportPlayer(struct Player &player)
 //funcao para iniciar tiro Q
 void InitShootQ(struct Shoot &shootQ)
 {
-    shootQ.ID = SHOOTQ;
+    shootQ.ID = SHOOT;
     shootQ.live = false;
     shootQ.speed = 0;
 }
@@ -225,8 +277,7 @@ void DrawShootQ(struct Shoot &shootQ)
 {
     if(shootQ.live)
     {
-        al_draw_line(((shootQ.x)), (shootQ.y), ((shootQ.x)), ((shootQ.y) - 25), al_map_rgb(0, 0, 255), 5);
-    }
+        al_draw_filled_circle(shootQ.x, shootQ.y, 10, al_map_rgb(0, 0, 255));    }
 }
 
 //funcao para disparar tiro Q
@@ -281,7 +332,7 @@ void UpdateShootQ(struct Shoot &shootQ, struct Player &player)
 //funcao para iniciar tiro W
 void InitShootW(struct Shoot &shootW)
 {
-    shootW.ID = SHOOTW;
+    shootW.ID = SHOOT;
     shootW.live = false;
     shootW.speed = 10;
 }
@@ -291,7 +342,7 @@ void DrawShootW(struct Shoot &shootW)
 {
     if (shootW.live)
     {
-        al_draw_line(((shootW.x)), (shootW.y), ((shootW.x)), ((shootW.y) + 25), al_map_rgb(0, 255, 0), 5);
+        al_draw_filled_circle(shootW.x, shootW.y, 15, al_map_rgb(255, 0, 0));
     }
 }
 
@@ -346,29 +397,29 @@ void UpdateShootW(struct Shoot &shootW, struct Player &player)
 //funçoes poder resistor "E"////////////////////////////////////////////////////////
 void InitShootE(Shoot &shootE)
 {
-    shootE.ID = SHOOTE;
+    shootE.ID = SHOOT;
     shootE.live = false;
     shootE.speed = 0;
     shootE.temp = 0;
     shootE.s = 0;
 }
-void DrawShootE(Shoot &shootE, Player &player)
+void DrawShootE(ALLEGRO_BITMAP *shield, Shoot &shootE, Player &player)
 {
     if (shootE.live)
     {
-        shootE.x = player.x;
-        shootE.y = player.y - player.boundy;
-        al_draw_line((shootE.x), (shootE.y), ((shootE.x) + 40), (shootE.y), al_map_rgb(255, 0, 0), 20);
+        shootE.x = player.x - player.boundx*0.70;
+        shootE.y = player.y - 1.45*player.boundy;
+        al_draw_bitmap(shield, shootE.x, shootE.y, 0);
     }
 }
 void FireShootE(Shoot &shootE, Player &player)
 {
     if (!(shootE.live))
     {
-        shootE.x = player.x;
-        shootE.y = player.y - 70;
+        shootE.x = player.x - player.boundx*0.70;
+        shootE.y = player.y - 1.45*player.boundy;
         shootE.live = true;
-        shootE.temp = 3;
+        shootE.temp = 1000;
         player.shield = true;
     }
 }
@@ -398,49 +449,55 @@ void InitEnemyRed(struct Enemy_red enemyred[], int *num_enemies)
     int j;
     for(j=0; j < *num_enemies; j++)
     {
-        enemyred[j].ID = ENEMYRED;
-        enemyred[j].x = 350 + (rand() % 500);
-        enemyred[j].y = 150;
-        enemyred[j].speed = 0.005;
+        enemyred[j].ID = ENEMY;
+        enemyred[j].x = back_x;
+        enemyred[j].y = back_y;
+        enemyred[j].speed = 0.001;
+        enemyred[j].speedx = 0.005;
         enemyred[j].size_enemy = 0;
         enemyred[j].velx = 0;
         enemyred[j].vely = 0;
         enemyred[j].boundx = 0;
         enemyred[j].boundy = 0;
-        enemyred[j].real_size_enemy = 80;
+        enemyred[j].real_size_enemy = 30;
         enemyred[j].moving = false;
         enemyred[j].alive = true;
     }
 }
 
 //funcao para desenhar inimigo tipo 1 (vermelho)
-void DrawEnemyRed(struct Enemy_red enemyred[], int *num_enemies, struct Player &player)
+void DrawEnemyRed(struct Enemy_red enemyred[], int *num_enemies, struct Player &player, struct Sprite &enemyred_sprite)
 {
     int j;
     for(j=0; j < *num_enemies; j++)
     {
         if(enemyred[j].alive && player.alive)
         {
+            if(++enemyred_sprite.frame_count >= enemyred_sprite.frame_delay)
+            {
+                if(++enemyred_sprite.frame_atual >= enemyred_sprite.frame_max)
+                    enemyred_sprite.frame_atual = 0;
+                enemyred_sprite.frame_count = 0;
+            }
+
+            //al_draw_bitmap(enemyred_sprite.image[enemyred_sprite.frame_atual], enemyred[j].x, enemyred[j].y, 0);
             al_draw_filled_circle(enemyred[j].x, enemyred[j].y, enemyred[j].size_enemy, al_map_rgb(enemyred[j].size_enemy + 150, 0, 0));
             al_draw_filled_rectangle(enemyred[j].x + 20, enemyred[j].y - 10, enemyred[j].x + enemyred[j].size_enemy, enemyred[j].y - enemyred[j].size_enemy, al_map_rgb(enemyred[j].size_enemy+100, enemyred[j].size_enemy, 0));
             al_draw_filled_rectangle(enemyred[j].x - 20, enemyred[j].y, enemyred[j].x - enemyred[j].size_enemy, enemyred[j].y + enemyred[j].size_enemy, al_map_rgb(enemyred[j].size_enemy+100, enemyred[j].size_enemy, 0));
-
         }
         else if(enemyred[j].alive == false)
         {
-            enemyred[j].x= 350 + (rand() % 500);
-            if(player.inverted == false)
-                enemyred[j].y = 150;
-            if(player.inverted)
-                enemyred[j].y = 400;
-            enemyred[j].size_enemy=0;
+            enemyred[j].x= back_x;
+            enemyred[j].y = back_y;
+            enemyred[j].size_enemy = 0;
             enemyred[j].velx = 0;
+            enemyred[j].vely = 0;
         }
     }
 }
 
 //funcao para atualizar inimigo vermelho
-void UpdateEnemyRed(struct Enemy_red enemyred[], int *num_enemies, struct Player &player)
+void UpdateEnemyRed(struct Enemy_red enemyred[], int *num_enemies, struct Player &player, struct Shoot &shootQ)
 {
     *num_enemies = 1;
     if(player.score > 10)
@@ -450,6 +507,10 @@ void UpdateEnemyRed(struct Enemy_red enemyred[], int *num_enemies, struct Player
     int j;
     for(j=0; j < *num_enemies; j++)
     {
+        if(shootQ.live == false)
+        {
+            enemyred[j].alive = true;
+        }
         if(enemyred[j].x - enemyred[j].boundx > WIDTH ||
                 enemyred[j].x + enemyred[j].boundx < 0 ||
                 enemyred[j].y + enemyred[j].boundy < 0 ||
@@ -457,16 +518,14 @@ void UpdateEnemyRed(struct Enemy_red enemyred[], int *num_enemies, struct Player
             enemyred[j].alive = false;
         if(enemyred[j].alive)
         {
-            enemyred[j].size_enemy+=enemyred[j].velx;
-            enemyred[j].velx+=enemyred[j].speed;
-            if(!player.inverted)
-                enemyred[j].y+=1.5;
-            if(player.inverted)
-                enemyred[j].y-=1.5;
-            if(enemyred[j].x > player.x)
-                enemyred[j].x-=enemyred[j].velx;
+            enemyred[j].velx += enemyred[j].speedx;
+            enemyred[j].vely += enemyred[j].speed;
+            enemyred[j].size_enemy += enemyred[j].vely;
+            enemyred[j].y += enemyred[j].vely;
             if(enemyred[j].x < player.x)
-                enemyred[j].x+=enemyred[j].velx;
+                enemyred[j].x += enemyred[j].velx;
+            if(enemyred[j].x > player.x)
+                enemyred[j].x -= enemyred[j].velx;
         }
     }
 }
@@ -477,7 +536,7 @@ void InitEnemyBlue(struct Enemy_blue enemyblue[], int *num_enemies)
     int j;
     for(j=0; j < *num_enemies; j++)
     {
-        enemyblue[j].ID = ENEMYBLUE;
+        enemyblue[j].ID = ENEMY;
         enemyblue[j].x = 400 + (rand() % 400);
         enemyblue[j].y = 200;
         enemyblue[j].speed = 0.5;
@@ -501,23 +560,20 @@ void DrawEnemyBlue(struct Enemy_blue enemyblue[], int *num_enemies, struct Playe
         if(enemyblue[j].alive && player.score >= 6)
         {
             al_draw_filled_circle(enemyblue[j].x, enemyblue[j].y, enemyblue[j].size_enemy, al_map_rgb(0, enemyblue[j].size_enemy * 6, enemyblue[j].size_enemy * 6));
-            //al_draw_filled_rectangle(enemyblue[j].x + 10, enemyblue[j].y - 5, enemyblue[j].x + enemyblue[j].size_enemy, enemyblue[j].y - enemyblue[j].size_enemy, al_map_rgb(150, enemyblue[j].size_enemy, enemyblue[j].size_enemy + 100));
-            //al_draw_filled_rectangle(enemyblue[j].x - 10, enemyblue[j].y - 5, enemyblue[j].x - enemyblue[j].size_enemy, enemyblue[j].y + enemyblue[j].size_enemy, al_map_rgb(enemyblue[j].size_enemy + 100, enemyblue[j].size_enemy + 100, enemyblue[j].size_enemy));
+            al_draw_filled_rectangle(enemyblue[j].x + 10, enemyblue[j].y - 5, enemyblue[j].x + enemyblue[j].size_enemy, enemyblue[j].y - enemyblue[j].size_enemy, al_map_rgb(150, enemyblue[j].size_enemy, enemyblue[j].size_enemy + 100));
+            al_draw_filled_rectangle(enemyblue[j].x - 10, enemyblue[j].y - 5, enemyblue[j].x - enemyblue[j].size_enemy, enemyblue[j].y + enemyblue[j].size_enemy, al_map_rgb(enemyblue[j].size_enemy + 100, enemyblue[j].size_enemy + 100, enemyblue[j].size_enemy));
         }
         else if(enemyblue[j].alive == false)
         {
-            enemyblue[j].x= 400 + (rand() % 400);
-            if(!player.inverted)
-                enemyblue[j].y = 200;
-            if(player.inverted)
-                enemyblue[j].y = 400;
-            enemyblue[j].size_enemy=0;
+            enemyblue[j].x = (back_x - 10) + (rand() % 20);
+            enemyblue[j].y = back_y;
+            enemyblue[j].size_enemy = 0;
         }
     }
 }
 
 //funcao para atualizar inimigo azul
-void UpdateEnemyBlue(struct Enemy_blue enemyblue[], int *num_enemies, struct Player &player)
+void UpdateEnemyBlue(struct Enemy_blue enemyblue[], int *num_enemies, struct Player &player, struct Shoot &shootW)
 {
     *num_enemies = 1;
     if(player.score > 10)
@@ -525,44 +581,51 @@ void UpdateEnemyBlue(struct Enemy_blue enemyblue[], int *num_enemies, struct Pla
     int j;
     for(j=0; j < *num_enemies; j++)
     {
-        if(enemyblue[j].x + enemyblue[j].boundx > WIDTH || enemyblue[j].x - enemyblue[j].boundx < 0)
+        if(shootW.live == false)
+        {
+            enemyblue[j].alive = true;
+        }
+        if(enemyblue[j].alive && ((enemyblue[j].x + enemyblue[j].boundx) > WIDTH || (enemyblue[j].x - enemyblue[j].boundx) < 0))
+        {
             enemyblue[j].alive = false;
+            player.lives -= 1;
+        }
         if(enemyblue[j].alive && player.score >= 6)
         {
-            if(enemyblue[j].size_enemy<enemyblue[j].real_size_enemy)
+            if(enemyblue[j].size_enemy < enemyblue[j].real_size_enemy)
+                enemyblue[j].size_enemy += enemyblue[j].speed;
+            enemyblue[j].velx = enemyblue[j].speedx;
+            enemyblue[j].vely = enemyblue[j].speed;
+            if(!player.inverted)
+                enemyblue[j].y += enemyblue[j].vely;
+            if(player.inverted)
+                enemyblue[j].y -= enemyblue[j].vely;
+            if(enemyblue[j].size_enemy < enemyblue[j].real_size_enemy/2)
             {
-                enemyblue[j].size_enemy+=enemyblue[j].speed;
-                if(!player.inverted)
-                    enemyblue[j].y+=1;
-                if(player.inverted)
-                    enemyblue[j].y-=1;
-                if(enemyblue[j].x<WIDTH/2)
+                if(enemyblue[j].x <= back_x)
                 {
-                    if(enemyblue[j].size_enemy<enemyblue[j].real_size_enemy/2)
-                    {
-                        enemyblue[j].x-=0.6;
-                    }
-                    if(enemyblue[j].size_enemy>=enemyblue[j].real_size_enemy/2)
-                    {
-                        enemyblue[j].x+=1.5;
-                    }
+                    enemyblue[j].x -= enemyblue[j].velx;
                 }
-                if(enemyblue[j].x>WIDTH/2)
+                if(enemyblue[j].x > back_x)
                 {
-                    if(enemyblue[j].size_enemy<enemyblue[j].real_size_enemy/2)
+                    enemyblue[j].x += enemyblue[j].velx;
+                }
+                if(enemyblue[j].size_enemy >= enemyblue[j].real_size_enemy/2)
+                {
+                    if(enemyblue[j].x > player.x)
                     {
-                        enemyblue[j].x+=0.6;
+                        enemyblue[j].x -= enemyblue[j].velx;
                     }
-                    if(enemyblue[j].size_enemy>=enemyblue[j].real_size_enemy/2)
+                    if(enemyblue[j].x < player.x)
                     {
-                        enemyblue[j].x-=1.5;
+                        enemyblue[j].x += enemyblue[j].velx;
                     }
                 }
             }
+
         }
     }
 }
-
 //funcao de colisao de tiro Q com inimigo vermelho
 void ShootQColisionEnemyRed(struct Shoot &shootQ, struct Enemy_red enemyred[], int *num_enemies, struct Player &player)
 {
@@ -581,11 +644,8 @@ void ShootQColisionEnemyRed(struct Shoot &shootQ, struct Enemy_red enemyred[], i
             {
                 enemyred[j].alive = false;
                 player.score += 2;
+                shootQ.live = false;
             }
-        }
-        if(shootQ.live == false)
-        {
-            enemyred[j].alive = true;
         }
     }
 }
@@ -608,11 +668,8 @@ void ShootWColisionEnemyBlue(struct Shoot &shootW, struct Enemy_blue enemyblue[]
             {
                 enemyblue[j].alive = false;
                 player.score += 1;
+                shootW.live = false;
             }
-        }
-        if(shootW.live == false)
-        {
-            enemyblue[j].alive = true;
         }
     }
 }
@@ -670,9 +727,9 @@ void PlayerColisionEnemyBlue(struct Player &player, struct Enemy_blue enemyblue[
 //funcao para iniciar obstaculo
 void InitObstacle(Obstacle &obstacle)
 {
-    obstacle.ID = OBSTACLE;
-    obstacle.x = WIDTH/2;
-    obstacle.y = HEIGHT/2;
+    obstacle.ID = ENEMY;
+    obstacle.x = back_x;
+    obstacle.y = back_y;
     obstacle.speed = 0.1;
     obstacle.velx = 1;
     obstacle.vely = 0;
@@ -727,14 +784,14 @@ void UpdateObstacle(Obstacle &obstacle, ALLEGRO_FONT *medium_font, Player &playe
                 if(obstacle.y<(50) &&
                         player.x>=obstacle.x &&
                         player.x+player.boundx <= obstacle.x+obstacle.size_obst)
-                    al_draw_textf(medium_font, al_map_rgb(255, 0, 0), WIDTH/2, HEIGHT/2, ALLEGRO_ALIGN_CENTER, "JUMP!");
+                    al_draw_textf(medium_font, al_map_rgb(255, 0, 0), WIDTH/2, HEIGHT/2, ALLEGRO_ALIGN_CENTRE, "JUMP!");
             }
         }
     }
     if(obstacle.y>HEIGHT+20 || obstacle.y < -20)
     {
-        obstacle.x = 200 + (rand() % 400);
-        obstacle.y = HEIGHT/2;
+        obstacle.x = back_x;
+        obstacle.y = back_y;
         obstacle.speed = 0.1;
         obstacle.velx = 1;
         obstacle.vely = 0;
@@ -754,8 +811,8 @@ void PlayerColisionObstacle(Player &player, Obstacle &obstacle)
         if(player.x>=obstacle.x &&
                 player.x+player.boundx <= obstacle.x+obstacle.size_obst && !player.jump)
         {
-            obstacle.x = 200 + (rand() % 400);
-            obstacle.y = HEIGHT/2;
+            obstacle.x = back_x;
+            obstacle.y = back_y;
             obstacle.speed = 0.1;
             obstacle.velx = 1;
             obstacle.vely = 0;
@@ -764,7 +821,7 @@ void PlayerColisionObstacle(Player &player, Obstacle &obstacle)
             obstacle.alive = false;
             obstacle.score = player.score + 5;
             if(!player.shield)
-            player.lives-=1;
+                player.lives -= 1;
             player.jump = true;
         }
     }
@@ -773,16 +830,15 @@ void PlayerColisionObstacle(Player &player, Obstacle &obstacle)
 //funcao para escrever textos
 void DrawText(ALLEGRO_FONT *title_font, ALLEGRO_FONT *medium_font, Player &player, Boss boss[], int *num_boss, int *text_color, int *text_boss)
 {
-    al_clear_to_color(al_map_rgb(*text_color*2, *text_color*2, *text_color*2));
-    al_draw_text(title_font, al_map_rgb(*text_color, 0, 0), WIDTH/2, 150, ALLEGRO_ALIGN_CENTRE, "SHOCK EFFECT");
+    if(*text_color > 1)
+        al_draw_text(title_font, al_map_rgb(*text_color, 0, 0), WIDTH/2, 150, ALLEGRO_ALIGN_CENTRE, "SHOCK EFFECT");
     int j;
     for(j=0; j < *num_boss; j++)
     {
         if(boss[j].alive)
         {
-            al_clear_to_color(al_map_rgb(*text_boss * 2, *text_boss * 2, *text_boss * 2));
             al_draw_textf(medium_font, al_map_rgb(255, 255, 255), 50, 100, ALLEGRO_ALIGN_LEFT, "Boss: %d", boss[j].lives);
-            al_draw_textf(medium_font, al_map_rgb(*text_boss, 0, 0), WIDTH/2, 100, ALLEGRO_ALIGN_CENTER, "Boss %d", *num_boss);
+            al_draw_textf(medium_font, al_map_rgb(*text_boss, 0, 0), WIDTH/2, 100, ALLEGRO_ALIGN_CENTRE, "Boss %d", *num_boss);
         }
     }
     al_draw_textf(medium_font, al_map_rgb(255, 255, 255), 50, 20, ALLEGRO_ALIGN_LEFT, "Score: %d", player.score);
@@ -812,9 +868,9 @@ void InitBoss(struct Boss boss[], int *num_boss)
     int j;
     for(j=0; j < *num_boss; j++)
     {
-        boss[j].ID = BOSS;
-        boss[j].x = WIDTH/2;
-        boss[j].y = 400;
+        boss[j].ID = ENEMY;
+        boss[j].x = back_x;
+        boss[j].y = back_y;
         boss[j].real_y = boss[j].y;
         boss[j].speed = 0.1;
         boss[j].size_boss = 0;
@@ -838,8 +894,8 @@ void DrawBoss(struct Boss boss[], int *num_boss, struct Player &player)
         if(boss[j].alive)
         {
             al_draw_filled_circle(boss[j].x, boss[j].y, boss[j].size_boss, al_map_rgb(255,0,255));
-            //al_draw_filled_rectangle(boss[j].x + 30, boss[j].y - 5, boss[j].x + boss[j].size_boss, boss[j].y - boss[j].size_boss, al_map_rgb(boss[j].size_boss + 100, boss[j].size_boss, 0));
-            //al_draw_filled_rectangle(boss[j].x - 40, boss[j].y, boss[j].x - boss[j].size_boss, boss[j].y + boss[j].size_boss, al_map_rgb(boss[j].size_boss + 100, 50, boss[j].size_boss));
+            al_draw_filled_rectangle(boss[j].x + 30, boss[j].y - 5, boss[j].x + boss[j].size_boss, boss[j].y - boss[j].size_boss, al_map_rgb(boss[j].size_boss + 100, boss[j].size_boss, 0));
+            al_draw_filled_rectangle(boss[j].x - 40, boss[j].y, boss[j].x - boss[j].size_boss, boss[j].y + boss[j].size_boss, al_map_rgb(boss[j].size_boss + 100, 50, boss[j].size_boss));
         }
     }
 }
@@ -853,7 +909,7 @@ void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player
         boss[0].alive = true;
         *num_boss = 1;
     }
-    if(player.score > 80 && boss[1].lived == false)
+    if(player.score > 100 && boss[1].lived == false)
     {
         boss[1].alive = true;
         *num_boss = 2;
@@ -866,8 +922,8 @@ void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player
         {
             boss[j].alive = false;
             boss[j].lived = true;
-            boss[j].x = WIDTH/2;
-            boss[j].y = 400;
+            boss[j].x = back_x;
+            boss[j].y = back_y;
             boss[j].real_y = boss[j].y;
             boss[j].speed = 0.1;
             boss[j].size_boss = 0;
@@ -893,11 +949,6 @@ void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player
                 boss[j].y += boss[j].vely;
             if(boss[j].y > boss[j].real_y)
                 boss[j].y -= boss[j].vely;
-
-            /*if(boss[j].x < boss[j].real_x)
-                boss[j].x += boss[j].velx;
-            if(boss[j].x > boss[j].real_x)
-                boss[j].x -= boss[j].velx;*/
 
             if(boss[j].x < player.x)
                 boss[j].x+=boss[j].velx;
@@ -925,7 +976,7 @@ void PlayerColisionBoss(struct Player &player, struct Boss boss[], int *num_boss
                 player.lives--;
                 boss[j].lives--;
                 boss[j].real_y = HEIGHT/2;
-                boss[j].x = 150 + (rand() % 900);
+                boss[j].x = WIDTH*0.1 + (rand() % WIDTH*0.8);
                 player.jump = true;
                 player.score += 1;
             }
@@ -967,19 +1018,365 @@ void ShootColisionBoss(struct Shoot &shootW, struct Shoot &shootQ, struct Boss b
     }
 }
 
-//funcao para slow motion
-/*void SlowMo(ALLEGRO_TIMER *slowmo, ALLEGRO_TIMER *timer, ALLEGRO_EVENT_QUEUE *event_queue)
+void InitBackground(struct Sprite &background, int letra)
 {
-    if(keys[R] == true)
+    if(letra == 1)
     {
-        slowmo = al_create_timer(1.0 / 60);
-        al_register_event_source(event_queue, al_get_timer_event_source(slowmo));
-        al_start_timer(slowmo);
+        background.frame_atual = 0;
+        background.frame_count = 0;
+        background.frame_delay = 2;
+        background.frame_max = 12;
+
+        background.image[0] = al_load_bitmap("images/background/back_0.png");
+        background.image[1] = al_load_bitmap("images/background/back_2.png");
+        background.image[2] = al_load_bitmap("images/background/back_4.png");
+        background.image[3] = al_load_bitmap("images/background/back_6.png");
+        background.image[4] = al_load_bitmap("images/background/back_8.png");
+        background.image[5] = al_load_bitmap("images/background/back_10.png");
+        background.image[6] = al_load_bitmap("images/background/back_12.png");
+        background.image[7] = al_load_bitmap("images/background/back_14.png");
+        background.image[8] = al_load_bitmap("images/background/back_16.png");
+        background.image[9] = al_load_bitmap("images/background/back_18.png");
+        background.image[10] = al_load_bitmap("images/background/back_20.png");
+        background.image[11] = al_load_bitmap("images/background/back_22.png");
     }
-    else if(keys[R] == false)
+}
+
+void DrawBackground(struct Sprite &background, int letra)
+{
+    if(letra == 1)
     {
-        al_destroy_timer(slowmo);
+        if(++background.frame_count >= background.frame_delay)
+        {
+            if(++background.frame_atual >= background.frame_max)
+                background.frame_atual = 0;
+            background.frame_count = 0;
+        }
+
+        al_draw_bitmap(background.image[background.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
     }
-}*/
+}
+
+void InitBackground1(struct Sprite &background1, int letra)
+{
+    if(letra == 2)
+    {
+        background1.frame_atual = 0;
+        background1.frame_count = 0;
+        background1.frame_delay = 5;
+        background1.frame_max = 11;
+
+        background1.image[0] = al_load_bitmap("images/background/back5/back5 (1).png");
+        background1.image[1] = al_load_bitmap("images/background/back5/back5 (3).png");
+        background1.image[2] = al_load_bitmap("images/background/back5/back5 (5).png");
+        background1.image[3] = al_load_bitmap("images/background/back5/back5 (7).png");
+        background1.image[4] = al_load_bitmap("images/background/back5/back5 (9).png");
+        background1.image[5] = al_load_bitmap("images/background/back5/back5 (11).png");
+        background1.image[6] = al_load_bitmap("images/background/back5/back5 (13).png");
+        background1.image[7] = al_load_bitmap("images/background/back5/back5 (15).png");
+        background1.image[8] = al_load_bitmap("images/background/back5/back5 (17).png");
+        background1.image[9] = al_load_bitmap("images/background/back5/back5 (19).png");
+        background1.image[10] = al_load_bitmap("images/background/back5/back5 (21).png");
+    }
+}
+
+void DrawBackground1(struct Sprite &background1, int letra)
+{
+    if(letra == 2)
+    {
+        if(++background1.frame_count >= background1.frame_delay)
+        {
+            if(++background1.frame_atual >= background1.frame_max)
+                background1.frame_atual = 0;
+            background1.frame_count = 0;
+        }
+
+        al_draw_bitmap(background1.image[background1.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    }
+}
+
+void InitBackground2(struct Sprite &background2, int letra)
+{
+    if(letra == 3)
+    {
+        background2.frame_atual = 0;
+        background2.frame_count = 0;
+        background2.frame_delay = 5;
+        background2.frame_max = 12;
+
+        background2.image[0] = al_load_bitmap("images/background/back2/back2 (1).png");
+        background2.image[1] = al_load_bitmap("images/background/back2/back2 (3).png");
+        background2.image[2] = al_load_bitmap("images/background/back2/back2 (5).png");
+        background2.image[3] = al_load_bitmap("images/background/back2/back2 (7).png");
+        background2.image[4] = al_load_bitmap("images/background/back2/back2 (9).png");
+        background2.image[5] = al_load_bitmap("images/background/back2/back2 (11).png");
+        background2.image[6] = al_load_bitmap("images/background/back2/back2 (13).png");
+        background2.image[7] = al_load_bitmap("images/background/back2/back2 (15).png");
+        background2.image[8] = al_load_bitmap("images/background/back2/back2 (17).png");
+        background2.image[9] = al_load_bitmap("images/background/back2/back2 (19).png");
+        background2.image[10] = al_load_bitmap("images/background/back2/back2 (21).png");
+        background2.image[11] = al_load_bitmap("images/background/back2/back2 (23).png");
+    }
+}
+
+void DrawBackground2(struct Sprite &background2, int letra)
+{
+    if(letra == 3)
+    {
+        if(++background2.frame_count >= background2.frame_delay)
+        {
+            if(++background2.frame_atual >= background2.frame_max)
+                background2.frame_atual = 0;
+            background2.frame_count = 0;
+        }
+
+        al_draw_bitmap(background2.image[background2.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    }
+}
+
+void InitBackground3(struct Sprite &background3, int letra)
+{
+    if(letra == 4)
+    {
+        background3.frame_atual = 0;
+        background3.frame_count = 0;
+        background3.frame_delay = 5;
+        background3.frame_max = 11;
+
+        background3.image[0] = al_load_bitmap("images/background/back7/back7 (2).png");
+        background3.image[1] = al_load_bitmap("images/background/back7/back7 (4).png");
+        background3.image[2] = al_load_bitmap("images/background/back7/back7 (6).png");
+        background3.image[3] = al_load_bitmap("images/background/back7/back7 (8).png");
+        background3.image[4] = al_load_bitmap("images/background/back7/back7 (10).png");
+        background3.image[5] = al_load_bitmap("images/background/back7/back7 (12).png");
+        background3.image[6] = al_load_bitmap("images/background/back7/back7 (14).png");
+        background3.image[7] = al_load_bitmap("images/background/back7/back7 (16).png");
+        background3.image[8] = al_load_bitmap("images/background/back7/back7 (18).png");
+        background3.image[9] = al_load_bitmap("images/background/back7/back7 (20).png");
+        background3.image[10] = al_load_bitmap("images/background/back7/back7 (22).png");
+    }
+}
+
+void DrawBackground3(struct Sprite &background3, int letra)
+{
+    if(letra == 4)
+    {
+        if(++background3.frame_count >= background3.frame_delay)
+        {
+            if(++background3.frame_atual >= background3.frame_max)
+                background3.frame_atual = 0;
+            background3.frame_count = 0;
+        }
+
+        al_draw_bitmap(background3.image[background3.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    }
+}
+
+void InitBackground4(struct Sprite &background4, int letra)
+{
+    if(letra == 5)
+    {
+        background4.frame_atual = 0;
+        background4.frame_count = 0;
+        background4.frame_delay = 5;
+        background4.frame_max = 11;
+
+        background4.image[0] = al_load_bitmap("images/background/back8/back8 (1).png");
+        background4.image[1] = al_load_bitmap("images/background/back8/back8 (3).png");
+        background4.image[2] = al_load_bitmap("images/background/back8/back8 (5).png");
+        background4.image[3] = al_load_bitmap("images/background/back8/back8 (7).png");
+        background4.image[4] = al_load_bitmap("images/background/back8/back8 (9).png");
+        background4.image[5] = al_load_bitmap("images/background/back8/back8 (11).png");
+        background4.image[6] = al_load_bitmap("images/background/back8/back8 (13).png");
+        background4.image[7] = al_load_bitmap("images/background/back8/back8 (15).png");
+        background4.image[8] = al_load_bitmap("images/background/back8/back8 (17).png");
+        background4.image[9] = al_load_bitmap("images/background/back8/back8 (19).png");
+        background4.image[10] = al_load_bitmap("images/background/back8/back8 (21).png");
+    }
+}
+
+void DrawBackground4(struct Sprite &background4, int letra)
+{
+    if(letra == 5)
+    {
+        if(++background4.frame_count >= background4.frame_delay)
+        {
+            if(++background4.frame_atual >= background4.frame_max)
+                background4.frame_atual = 0;
+            background4.frame_count = 0;
+        }
+
+        al_draw_bitmap(background4.image[background4.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    }
+}
+
+void InitBackground5(struct Sprite &background5, int letra)
+{
+    if(letra == 6)
+    {
+        background5.frame_atual = 0;
+        background5.frame_count = 0;
+        background5.frame_delay = 5;
+        background5.frame_max = 20;
+
+        background5.image[0] = al_load_bitmap("images/background/back6/back6 (1).png");
+        background5.image[1] = al_load_bitmap("images/background/back6/back6 (3).png");
+        background5.image[2] = al_load_bitmap("images/background/back6/back6 (5).png");
+        background5.image[3] = al_load_bitmap("images/background/back6/back6 (7).png");
+        background5.image[4] = al_load_bitmap("images/background/back6/back6 (9).png");
+        background5.image[5] = al_load_bitmap("images/background/back6/back6 (11).png");
+        background5.image[6] = al_load_bitmap("images/background/back6/back6 (13).png");
+        background5.image[7] = al_load_bitmap("images/background/back6/back6 (15).png");
+        background5.image[8] = al_load_bitmap("images/background/back6/back6 (17).png");
+        background5.image[9] = al_load_bitmap("images/background/back6/back6 (19).png");
+        background5.image[10] = al_load_bitmap("images/background/back6/back6 (21).png");
+        background5.image[11] = al_load_bitmap("images/background/back6/back6 (23).png");
+        background5.image[12] = al_load_bitmap("images/background/back6/back6 (25).png");
+        background5.image[13] = al_load_bitmap("images/background/back6/back6 (27).png");
+        background5.image[14] = al_load_bitmap("images/background/back6/back6 (29).png");
+        background5.image[15] = al_load_bitmap("images/background/back6/back6 (31).png");
+        background5.image[16] = al_load_bitmap("images/background/back6/back6 (33).png");
+        background5.image[17] = al_load_bitmap("images/background/back6/back6 (35).png");
+        background5.image[18] = al_load_bitmap("images/background/back6/back6 (37).png");
+        background5.image[19] = al_load_bitmap("images/background/back6/back6 (39).png");
+    }
+}
+
+void DrawBackground5(struct Sprite &background5, int letra)
+{
+    if(letra == 6)
+    {
+        if(++background5.frame_count >= background5.frame_delay)
+        {
+            if(++background5.frame_atual >= background5.frame_max)
+                background5.frame_atual = 0;
+            background5.frame_count = 0;
+        }
+
+        al_draw_bitmap(background5.image[background5.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    }
+}
+
+void InitBackground6(struct Sprite &background6, int letra)
+{
+    if(letra == 7)
+    {
+        background6.frame_atual = 0;
+        background6.frame_count = 0;
+        background6.frame_delay = 5;
+        background6.frame_max = 21;
+
+        background6.image[0] = al_load_bitmap("images/background/back9/back9 (1).png");
+        background6.image[1] = al_load_bitmap("images/background/back9/back9 (5).png");
+        background6.image[2] = al_load_bitmap("images/background/back9/back9 (10).png");
+        background6.image[3] = al_load_bitmap("images/background/back9/back9 (15).png");
+        background6.image[4] = al_load_bitmap("images/background/back9/back9 (20).png");
+        background6.image[5] = al_load_bitmap("images/background/back9/back9 (25).png");
+        background6.image[6] = al_load_bitmap("images/background/back9/back9 (30).png");
+        background6.image[7] = al_load_bitmap("images/background/back9/back9 (35).png");
+        background6.image[8] = al_load_bitmap("images/background/back9/back9 (40).png");
+        background6.image[9] = al_load_bitmap("images/background/back9/back9 (45).png");
+        background6.image[10] = al_load_bitmap("images/background/back9/back9 (50).png");
+        background6.image[11] = al_load_bitmap("images/background/back9/back9 (55).png");
+        background6.image[12] = al_load_bitmap("images/background/back9/back9 (60).png");
+        background6.image[13] = al_load_bitmap("images/background/back9/back9 (65).png");
+        background6.image[14] = al_load_bitmap("images/background/back9/back9 (70).png");
+        background6.image[15] = al_load_bitmap("images/background/back9/back9 (75).png");
+        background6.image[16] = al_load_bitmap("images/background/back9/back9 (80).png");
+        background6.image[17] = al_load_bitmap("images/background/back9/back9 (85).png");
+        background6.image[18] = al_load_bitmap("images/background/back9/back9 (90).png");
+        background6.image[19] = al_load_bitmap("images/background/back9/back9 (95).png");
+        background6.image[20] = al_load_bitmap("images/background/back9/back9 (99).png");
+    }
+}
+
+void DrawBackground6(struct Sprite &background6, int letra)
+{
+    if(letra == 7)
+    {
+        if(++background6.frame_count >= background6.frame_delay)
+        {
+            if(++background6.frame_atual >= background6.frame_max)
+                background6.frame_atual = 0;
+            background6.frame_count = 0;
+        }
+
+        al_draw_bitmap(background6.image[background6.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    }
+}
+
+
+void InitEnemyredSprite(struct Sprite &enemyred_sprite)
+{
+    enemyred_sprite.frame_atual = 0;
+    enemyred_sprite.frame_count = 0;
+    enemyred_sprite.frame_delay = 1;
+    enemyred_sprite.frame_max = 1;
+
+    enemyred_sprite.image[0] = al_load_bitmap("images/enemyred_0.png");
+}
+
+void OpcaoBackground(int &letra)
+{
+    printf("Digite o numero da opcao e tecle Enter\n 1 - Normal\n 2 - Tunel de espinhos\n 3 - Terra da Speranza\n 4 - LSD World\n 5 - Luz, luz!\n 6 - Preto no Branco\n 7 - Tudo azul...\n");
+    scanf("%d", &letra);
+    if(letra == 1)
+    {
+        WIDTH = 1200;
+        HEIGHT = 600;
+        back_x = WIDTH/2;
+        back_y = HEIGHT/2;
+    }
+    if(letra == 2)
+    {
+        WIDTH = 500;
+        HEIGHT = 655;
+        back_x = WIDTH*0.3;
+        back_y = HEIGHT*0.5;
+    }
+    if(letra == 3)
+    {
+        WIDTH = 400;
+        HEIGHT = 500;
+        back_x = WIDTH/2;
+        back_y = HEIGHT/2;
+    }
+    if(letra == 4)
+    {
+        WIDTH = 400;
+        HEIGHT = 500;
+        back_x = WIDTH/2;
+        back_y = HEIGHT/2;
+    }
+    if(letra == 5)
+    {
+        WIDTH = 500;
+        HEIGHT = 500;
+        back_x = WIDTH/2;
+        back_y = HEIGHT/2;
+    }
+    if(letra == 6)
+    {
+        WIDTH = 500;
+        HEIGHT = 711;
+        back_x = WIDTH/2;
+        back_y = HEIGHT/2;
+    }
+    if(letra == 7)
+    {
+        WIDTH = 400;
+        HEIGHT = 400;
+        back_x = WIDTH/2;
+        back_y = HEIGHT/2;
+    }
+    else if(letra != 1 &&
+            letra != 2 &&
+            letra != 3 &&
+            letra != 4 &&
+            letra != 5 &&
+            letra != 6 &&
+            letra != 7)
+        printf("Incorreto!");
+}
 
 #endif // FUNCTIONS_H_INCLUDED
