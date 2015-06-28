@@ -1,0 +1,5 @@
+*.layout
+*.depend
+*.exe
+*.o
+ShockEffect.layout
