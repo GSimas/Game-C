@@ -6,7 +6,7 @@ void InitPlayer(Player &player, int *text_color);
 void InitScientist(SpriteScientist &scientist);
 void DrawScientist(Player &player, SpriteScientist &scientist, bool *LEFT, bool *RIGHT);
 void PlayerJump(Player &player, bool *UP);
-void PlayerRight(Player &player, bool *RIGHT);
+void PlayerRight(Player &player, bool *RIGHT, struct SpriteScientist &scientist);
 void PlayerLeft(Player &player, bool *LEFT);
 void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue, Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color);
 void TransportPlayer(Player &player);
@@ -25,7 +25,7 @@ void UpdateShootW(struct Shoot &shootW, struct Player &player);
 
 //Funções shootE
 void InitShootE(Shoot &shootE);
-void DrawShootE(ALLEGRO_BITMAP *shield, Shoot &shootE, Player &player);
+void DrawShootE(Shoot &shootE, Player &player);
 void FireShootE(Shoot &shootE, Player &player);
 void UpdateShootE(Shoot &shootE, Player &player);
 
@@ -46,7 +46,7 @@ void PlayerColisionEnemyBlue(struct Player &player, struct Enemy_blue enemyblue[
 //funções Boss
 void InitBoss(struct Boss boss[], int *num_boss);
 void DrawBoss(struct Boss boss[], int *num_boss, struct Player &player);
-void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_red, struct Enemy_blue enemyblue[], int *num_blue);
+void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_red, struct Enemy_blue enemyblue[], int *num_blue, ALLEGRO_SAMPLE *musicaboss);
 void PlayerColisionBoss(struct Player &player, struct Boss boss[], int *num_boss);
 void ShootColisionBoss(struct Shoot &shootW, struct Shoot &shootQ, struct Boss boss[], int *num_boss, struct Player &player);
 
@@ -58,7 +58,7 @@ void PlayerColisionObstacle(Player &player, Obstacle &obstacle);
 
 //funções relacionadas a texto
 void ChangeColor(int *text_color, struct Player &player, struct Boss boss[], int *num_boss, int *text_boss);
-void DrawText(ALLEGRO_FONT *title_font, ALLEGRO_FONT *medium_font, Player &player, Boss boss[], int *num_boss, int *text_color, int *text_boss);
+void DrawText(ALLEGRO_FONT *title_font, ALLEGRO_FONT *medium_font, Player &player, Boss boss[], int *num_boss, int *text_color, int *text_boss, struct Obstacle &obstacle);
 
 //funcoes para background
 void OpcaoBackground(int &letra);
