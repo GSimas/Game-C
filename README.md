@@ -1,4 +1,7 @@
-# Game-C - ("Working Title")
+# Shock Effect 
+(Game em C com a biblioteca Allegro 5)
+
+![](https://raw.githubusercontent.com/GSimas/Game-C/master/Game-C/images/PromoPoster.png)
 
 ##Objetivo
 Desenvolver Game (educativo) em Linguagem C com biblioteca Allegro(5), sendo a ordem de metas:
@@ -12,10 +15,15 @@ Desenvolver Game (educativo) em Linguagem C com biblioteca Allegro(5), sendo a o
 * 8. [Ser um ~~Dong Nguyen~~ programador de sucesso (mesmo?)]
 
 ##Descrição geral
-Game Estilo "Endless Running"
+Game Estilo "Endless Running" - ou seja, eternamente sem fim...
 
 * Developed by: GSimas (Gustavo Simas) & Clasr (Clarice ~~Scheiβe~~ Scheibe)
 * Built for: Everybody
-* Supported by: ...
-.
-...
+* Supported by: (por quem mesmo?)
+
+
+
+
+
+
+Continua...
