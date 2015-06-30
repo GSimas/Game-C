@@ -27,7 +27,8 @@ struct Player
     int energy;
     int death_counter;
 
-    ALLEGRO_SAMPLE *sample[5];
+    ALLEGRO_SAMPLE *sample[7];
+    ALLEGRO_SAMPLE_INSTANCE *instance[2];
 };
 
 struct Enemy_red
@@ -89,8 +90,10 @@ struct Boss
     int lives;
     bool alive;
     bool lived;
+    bool instance_played;
 
-    ALLEGRO_SAMPLE *sample;
+    ALLEGRO_SAMPLE *sample[2];
+    ALLEGRO_SAMPLE_INSTANCE *instance[2];
 };
 
 struct Shoot

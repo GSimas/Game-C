@@ -3,12 +3,13 @@
 
 //Funções Player
 void InitPlayer(Player &player, int *text_color);
+void PlayerSample(Player &player, int letra, ALLEGRO_SAMPLE_ID *musica3id, ALLEGRO_SAMPLE *musica3);
 void InitScientist(SpriteScientist &scientist);
 void DrawScientist(Player &player, SpriteScientist &scientist, bool *LEFT, bool *RIGHT);
 void PlayerJump(Player &player, bool *UP);
 void PlayerRight(Player &player, bool *RIGHT, struct SpriteScientist &scientist);
 void PlayerLeft(Player &player, bool *LEFT);
-void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue, Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color);
+void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue, Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color, ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id, int letra);
 void TransportPlayer(Player &player);
 
 //Funções shootQ
@@ -44,9 +45,10 @@ void ShootWColisionEnemyBlue(struct Shoot &shootW, struct Enemy_blue enemyblue[]
 void PlayerColisionEnemyBlue(struct Player &player, struct Enemy_blue enemyblue[], int *num_enemies);
 
 //funções Boss
-void InitBoss(struct Boss boss[], int *num_boss);
+void InitBoss(struct Boss boss[], int *num_boss, int letra);
 void DrawBoss(struct Boss boss[], int *num_boss, struct Player &player);
-void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_red, struct Enemy_blue enemyblue[], int *num_blue, ALLEGRO_SAMPLE *musicaboss);
+void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_red, struct Enemy_blue enemyblue[], int *num_blue, int letra);
+void BossSample(struct Boss boss[], int *num_boss, int letra, ALLEGRO_SAMPLE_ID *musica6id, ALLEGRO_SAMPLE *musica6);
 void PlayerColisionBoss(struct Player &player, struct Boss boss[], int *num_boss);
 void ShootColisionBoss(struct Shoot &shootW, struct Shoot &shootQ, struct Boss boss[], int *num_boss, struct Player &player);
 

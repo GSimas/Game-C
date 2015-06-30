@@ -52,6 +52,35 @@ void InitPlayer(Player &player, int *text_color)
     player.sample[2] = al_load_sample("sounds/1/shieldoff.wav");
     player.sample[3] = al_load_sample("sounds/1/shieldcolision.wav");
     player.sample[4] = al_load_sample("sounds/1/playerdamage.wav");
+    player.sample[5] = al_load_sample("sounds/1/lives2.ogg");
+    player.sample[6] = al_load_sample("sounds/1/lives1.ogg");
+    player.instance[0] = al_create_sample_instance(player.sample[5]);
+    player.instance[1] = al_create_sample_instance(player.sample[6]);
+    al_attach_sample_instance_to_mixer(player.instance[0], al_get_default_mixer());
+    al_attach_sample_instance_to_mixer(player.instance[1], al_get_default_mixer());
+};
+
+void PlayerSample(Player &player, int letra, ALLEGRO_SAMPLE_ID *musica3id, ALLEGRO_SAMPLE *musica3)
+{
+    if(letra == 4)
+    {
+        if(!player.alive)
+        {
+            al_stop_sample_instance(player.instance[0]);
+            al_play_sample(musica3, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, musica3id);
+        }
+
+        if(player.lives == 2)
+        {
+            al_stop_sample(musica3id);
+            al_play_sample_instance(player.instance[0]);
+        }
+        if(player.lives == 1)
+        {
+            al_stop_sample_instance(player.instance[0]);
+            al_play_sample_instance(player.instance[1]);
+        }
+    }
 };
 
 void InitScientist(SpriteScientist &scientist)
@@ -194,7 +223,7 @@ void PlayerLeft(struct Player &player, bool *LEFT)
 }
 
 //funcao para reiniciar jogador e inimigos
-void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue, Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color)
+void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue, Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color, ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id, int letra)
 {
     int j;
     if(player.lives <= 0)
@@ -247,6 +276,7 @@ void ResetPlayer(Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_
             boss[j].lives = 20;
             boss[j].alive = false;
             boss[j].lived = false;
+            boss[j].instance_played = false;
         }
         obstacle.score = 5;
     }
@@ -322,7 +352,7 @@ void FireShootQ(struct Shoot &shootQ, struct Player &player)
             shootQ.width = 40;
             shootQ.height = 40;
             shootQ.live = true;
-            al_play_sample(shootQ.sample, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+            al_play_sample(shootQ.sample, 0.7, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
         }
         if(player.inverted)
         {
@@ -393,7 +423,7 @@ void FireShootW(struct Shoot &shootW, struct Player &player)
             shootW.live = true;
             shootW.width = 50;
             shootW.height = 50;
-            al_play_sample(shootW.sample, 1, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
+            al_play_sample(shootW.sample, 0.7, 0, 1, ALLEGRO_PLAYMODE_ONCE, NULL);
         }
         if(player.inverted)
         {
@@ -945,7 +975,7 @@ void ChangeColor(int *text_color, struct Player &player, struct Boss boss[], int
 }
 
 //funcao para iniciar boss
-void InitBoss(struct Boss boss[], int *num_boss)
+void InitBoss(struct Boss boss[], int *num_boss, int letra)
 {
     int j;
     for(j=0; j < *num_boss; j++)
@@ -964,6 +994,15 @@ void InitBoss(struct Boss boss[], int *num_boss)
         boss[j].lives = 20;
         boss[j].alive = false;
         boss[j].lived = false;
+        boss[j].instance_played = false;
+
+        boss[j].sample[0] = al_load_sample("sounds/1/songboss.ogg");
+        boss[j].sample[1] = al_load_sample("sounds/1/songboss2.ogg");
+        boss[j].instance[0] = al_create_sample_instance(boss[j].sample[0]);
+        boss[j].instance[1] = al_create_sample_instance(boss[j].sample[1]);
+        al_attach_sample_instance_to_mixer(boss[j].instance[0], al_get_default_mixer());
+        al_attach_sample_instance_to_mixer(boss[j].instance[1], al_get_default_mixer());
+
     }
 }
 
@@ -983,7 +1022,7 @@ void DrawBoss(struct Boss boss[], int *num_boss, struct Player &player)
 }
 
 //funcao para atualizar boss
-void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_enemyred, struct Enemy_blue enemyblue[], int *num_enemyblue, ALLEGRO_SAMPLE *musicaboss)
+void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_enemyred, struct Enemy_blue enemyblue[], int *num_enemyblue, int letra)
 {
     *num_boss = 0;
     if(player.score > 20 && boss[0].lived == false)
@@ -1046,6 +1085,36 @@ void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player
                 boss[j].x+=boss[j].velx;
             if(boss[j].x > player.x)
                 boss[j].x-=boss[j].velx;
+        }
+    }
+}
+
+void BossSample(struct Boss boss[], int *num_boss, int letra, ALLEGRO_SAMPLE_ID *musica6id, ALLEGRO_SAMPLE *musica6)
+{
+    int j;
+    for(j=0; j < *num_boss; j++)
+    {
+        if(boss[j].alive)
+        {
+            if(boss[j].instance_played == false && letra == 4)
+            {
+                al_play_sample_instance(boss[j].instance[0]);
+                boss[j].instance_played = true;
+            }
+            if(letra == 2)
+            {
+                al_stop_sample(musica6id);
+                al_play_sample_instance(boss[j].instance[1]);
+            }
+        }
+        if(boss[j].lived && !boss[j].instance_played)
+        {
+            if(letra == 2)
+            {
+                al_stop_sample_instance(boss[j].instance[1]);
+                al_play_sample(musica6, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, musica6id);
+                boss[j].instance_played = true;
+            }
         }
     }
 }

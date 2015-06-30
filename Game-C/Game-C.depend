@@ -251,7 +251,7 @@
 	"allegro5/allegro.h"
 	"allegro5/allegro_font.h"
 
-1435616294 source:c:\users\gustavo\documents\github\game-c\game-c\main.c
+1435616586 source:c:\users\gustavo\documents\github\game-c\game-c\main.c
 	<stdlib.h>
 	<stdio.h>
 	<allegro5/allegro.h>
@@ -266,9 +266,9 @@
 	"objects.h"
 	"functions.h"
 
-1435616294 c:\users\gustavo\documents\github\game-c\game-c\objects.h
+1435616586 c:\users\gustavo\documents\github\game-c\game-c\objects.h
 
-1435527647 source:c:\users\gustavo\documents\github\game-c\game-c\functions.c
+1435616586 source:c:\users\gustavo\documents\github\game-c\game-c\functions.c
 	<stdlib.h>
 	<stdio.h>
 	<allegro5/allegro.h>
@@ -276,8 +276,11 @@
 	<allegro5/allegro_native_dialog.h>
 	<allegro5/allegro_font.h>
 	<allegro5/allegro_ttf.h>
+	<allegro5/bitmap.h>
+	<allegro5/allegro_audio.h>
+	<allegro5/allegro_acodec.h>
 	<allegro5/allegro_image.h>
 	"objects.h"
 
-1435616294 c:\users\gustavo\documents\github\game-c\game-c\functions.h
+1435616586 c:\users\gustavo\documents\github\game-c\game-c\functions.h
 
