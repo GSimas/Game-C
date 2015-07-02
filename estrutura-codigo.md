@@ -42,7 +42,15 @@ Também pode-se obter mais informações pela wiki ALLEGRO, em: <https://wiki.al
 
 ##Observações
 Makefile incluído!
+
 Código aberto para modificações!
+
+Softwares utilizados:
+- ~~Microsoft Visual Studio Professional 2013~~
+- Code::Blocks IDE (programação em Windows)
+- Atom (programação em Linux)
+- Photoshop (edição de imagens)
+- Aseprite (edição de sprites)
+- Audacity (edição de áudio)
+
 Jogue à vontade!
-
-
