@@ -14,7 +14,8 @@ void ResetPlayer(int *tela, Player &player, Enemy_red enemyred[], int *num_enemy
                  Boss boss[], int *num_boss, int *text_color,
                  ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id,
                  ALLEGRO_SAMPLE *musica666, ALLEGRO_SAMPLE_ID *musica666id,
-                 int letra);
+                 int letra, bool *UP, bool *RIGHT, bool *LEFT, bool *Q, bool *W, bool *E);
+void ResetKeys(struct Player &player, bool *UP, bool *RIGHT, bool *LEFT, bool *Q, bool *W, bool *E);
 void TransportPlayer(Player &player);
 
 //Funções shootQ
