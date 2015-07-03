@@ -1,4 +1,4 @@
-#ifndef FUNCTIONS_H_INCLUDED
+﻿#ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED
 
 //inclusao de bibliotecas
@@ -1501,7 +1501,7 @@ void InitEnemyredSprite(struct Sprite &enemyred_sprite)
 
 void OpcaoBackground(int &letra)
 {
-    printf("Digite o numero da opcao e tecle Enter\n 0 - Normal\n 1 - Tunel de espinhos\n 2 - Terra da Speranza (LSD World) \n 3 - Paz e Amor\n 4 - Luz, luz!\n 5 - Preto no Branco\n 6 - Alem do Infinito\n");
+    printf("Digite o numero da opcao e tecle Enter\n 0 - Normal\n 1 - Tunel de espinhos\n 2 - Terra da Speranza (LSD World) \n 3 - Paz e Amor\n 4 - Luz, luz!\n 5 - Noir\n 6 - Alem do Infinito\n");
     scanf("%d", &letra);
 
     switch(letra)
