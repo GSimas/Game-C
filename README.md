@@ -1,6 +1,8 @@
 # Shock Effect 
 (Game em C com a biblioteca Allegro 5)
 
+Download: <http://www.mediafire.com/download/ozzghhjga41h455/Game-C.exe>
+
 ![](https://raw.githubusercontent.com/GSimas/Game-C/master/Game-C/images/PromoPoster.png)
 
 ##Objetivo
