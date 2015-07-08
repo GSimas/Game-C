@@ -1213,7 +1213,7 @@ void InitBackground0(struct Sprite &background0, ALLEGRO_SAMPLE *musica0, ALLEGR
     background0.image[12] = al_load_bitmap("images/telas/tela-inicio0.png");
     background0.image[13] = al_load_bitmap("images/telas/tela-instru0.png");
     background0.image[14] = al_load_bitmap("images/telas/tela-final0.png");
-    background0.image[15] = al_load_bitmap("images/reprovado.png");
+    background0.image[15] = al_load_bitmap("images/telas/reprovado.png");
 
     //carregar musica referente
     switch (letra)
