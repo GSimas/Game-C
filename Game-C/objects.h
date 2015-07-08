@@ -95,8 +95,8 @@ struct Boss
     bool instance_played;
 
     ALLEGRO_BITMAP *image;
-    ALLEGRO_SAMPLE *sample[3];
-    ALLEGRO_SAMPLE_INSTANCE *instance[3];
+    ALLEGRO_SAMPLE *sample[4];
+    ALLEGRO_SAMPLE_INSTANCE *instance[4];
 };
 
 struct Shoot

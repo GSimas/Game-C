@@ -44,6 +44,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="objects.h" />
+		<Unit filename="resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

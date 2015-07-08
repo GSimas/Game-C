@@ -1,4 +1,4 @@
-#ifndef FUNCTIONS_H_INCLUDED
+﻿#ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED
 
 //inclusao de bibliotecas
@@ -39,7 +39,7 @@ void InitPlayer(Player &player, int *text_color)
     player.lives = 5;
     player.speed = 7;
     player.jumpSpeed = 15;
-    player.jump = true;
+    player.jump = false;
     player.moving = false;
     player.colision = false;
     player.alive = true;
@@ -67,19 +67,19 @@ void InitPlayer(Player &player, int *text_color)
 
 void PlayerSample(Player &player, int letra, ALLEGRO_SAMPLE_ID *musica3id, ALLEGRO_SAMPLE *musica3)
 {
-    if(letra == 4)
+    if(letra == 3)
     {
         if(!player.alive)
         {
-            al_stop_sample_instance(player.instance[0]);
-            al_play_sample(musica3, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, musica3id);
+            al_stop_sample_instance(player.instance[1]);
         }
 
         if(player.lives == 2)
         {
-            al_stop_sample(musica3id);
+            //al_stop_sample(musica3id);
             al_play_sample_instance(player.instance[0]);
         }
+
         if(player.lives == 1)
         {
             al_stop_sample_instance(player.instance[0]);
@@ -98,8 +98,8 @@ void InitScientist(SpriteScientist &scientist)
     scientist.curFrameA = 0;
     scientist.curFrameB = 0;
     scientist.curFrameC = 0;
-
 }
+
 void DrawScientist(Player &player, SpriteScientist &scientist, bool *LEFT, bool *RIGHT)
 {
     if(player.alive)
@@ -183,6 +183,7 @@ void PlayerRight(struct Player &player, bool *RIGHT, struct SpriteScientist &sci
 {
     if(*RIGHT && !((player.x + scientist.frameWidth) >= WIDTH))
     {
+        player.velx = player.speed;
         player.x += player.velx;
         player.moving = true;
     }
@@ -192,6 +193,7 @@ void PlayerLeft(struct Player &player, bool *LEFT)
 {
     if(*LEFT && ((player.x > 1)))
     {
+        player.velx = player.speed;
         player.x -= player.velx;
         player.moving = true;
     }
@@ -199,9 +201,11 @@ void PlayerLeft(struct Player &player, bool *LEFT)
 
 //funcao para reiniciar jogador e inimigos
 void ResetPlayer(int *tela, Player &player, Enemy_red enemyred[],
-    int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue,
-    Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color,
-    ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id, int letra)
+                 int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue,
+                 Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color,
+                 ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id,
+                 ALLEGRO_SAMPLE *musica666, ALLEGRO_SAMPLE_ID *musica666id,
+                 int letra, bool *UP, bool *RIGHT, bool *LEFT, bool *Q, bool *W, bool *E)
 {
     int j;
     if(player.lives <= 0)
@@ -211,7 +215,6 @@ void ResetPlayer(int *tela, Player &player, Enemy_red enemyred[],
     }
     if(player.alive == false)
     {
-        *tela = TELA_FINAL;
         player.x = back_x;
         player.y = HEIGHT;
         player.lives = 5;
@@ -238,7 +241,7 @@ void ResetPlayer(int *tela, Player &player, Enemy_red enemyred[],
         {
             enemyblue[j].alive = false;
         }
-        for(j=0; j < *num_enemyblue; j++)
+        for(j=0; j < *num_boss; j++)
         {
             boss[j].ID = ENEMY;
             boss[j].x = back_x;
@@ -257,11 +260,34 @@ void ResetPlayer(int *tela, Player &player, Enemy_red enemyred[],
             boss[j].alive = false;
             boss[j].lived = false;
             boss[j].instance_played = false;
+            al_stop_sample_instance(boss[j].instance[0]);
+            al_stop_sample_instance(boss[j].instance[1]);
+            if(letra == 666)
+                al_stop_sample_instance(boss[j].instance[2]);
         }
         obstacle.score = 5;
+        *UP = false;
+        *RIGHT = false;
+        *LEFT = false;
+        *Q = false;
+        *W = false;
+        *E = false;
+        *tela = TELA_FINAL;
     }
 }
 
+void ResetKeys(struct Player &player, bool *UP, bool *RIGHT, bool *LEFT, bool *Q, bool *W, bool *E)
+{
+    if(player.alive == false)
+    {
+        *UP = false;
+        *RIGHT = false;
+        *LEFT = false;
+        *Q = false;
+        *W = false;
+        *E = false;
+    }
+}
 
 //funcoes poder indutor "Q"//////////////////////////////////////////////////
 //funcao para iniciar tiro Q
@@ -362,26 +388,27 @@ void InitShootW(struct Shoot &shootW, int letra)
 
 //funcao para desenhar tiro W
 void DrawShootW(struct Shoot &shootW, int letra, struct Boss boss[])
-{if(shootW.live)
 {
-    if(letra != 666)
-        al_draw_scaled_bitmap(shootW.bitmap[0], 0, 0, 30, 30, shootW.x, shootW.y, shootW.width, shootW.height, 0);
-    if(letra == 666)
+    if(shootW.live)
     {
-        if(!boss[0].alive &&
-                !boss[1].alive &&
-                !boss[2].alive &&
-                !boss[3].alive &&
-                !boss[4].alive)
-            al_draw_scaled_bitmap(shootW.bitmap[1], 0, 0, 30, 30, shootW.x, shootW.y, shootW.width, shootW.height, 0);
-        if(boss[0].alive ||
-                boss[1].alive ||
-                boss[2].alive ||
-                boss[3].alive ||
-                boss[4].alive)
-            al_draw_scaled_bitmap(shootW.bitmap[2], 0, 0, 30, 30, shootW.x, shootW.y, shootW.width, shootW.height, 0);
+        if(letra != 666)
+            al_draw_scaled_bitmap(shootW.bitmap[0], 0, 0, 30, 30, shootW.x, shootW.y, shootW.width, shootW.height, 0);
+        if(letra == 666)
+        {
+            if(!boss[0].alive &&
+                    !boss[1].alive &&
+                    !boss[2].alive &&
+                    !boss[3].alive &&
+                    !boss[4].alive)
+                al_draw_scaled_bitmap(shootW.bitmap[1], 0, 0, 30, 30, shootW.x, shootW.y, shootW.width, shootW.height, 0);
+            if(boss[0].alive ||
+                    boss[1].alive ||
+                    boss[2].alive ||
+                    boss[3].alive ||
+                    boss[4].alive)
+                al_draw_scaled_bitmap(shootW.bitmap[2], 0, 0, 30, 30, shootW.x, shootW.y, shootW.width, shootW.height, 0);
+        }
     }
-}
 }
 
 //funcao para disparar tiro W
@@ -532,6 +559,9 @@ void DrawEnemyRed(struct Enemy_red enemyred[], int *num_enemies, struct Player &
             enemyred[j].size_enemy = 0;
             enemyred[j].velx = 0;
             enemyred[j].vely = 0;
+            enemyred[j].speed = 0.001;
+            enemyred[j].speed_size = 0;
+            enemyred[j].speedx = 0.005;
         }
     }
 }
@@ -704,6 +734,10 @@ void ShootQColisionEnemyRed(struct Shoot &shootQ, struct Enemy_red enemyred[], i
                     shootQ.y - shootQ.boundy > (enemyred[j].y))
             {
                 enemyred[j].alive = false;
+                enemyred[j].speed = 0.001;
+                enemyred[j].speed_size = 0;
+                enemyred[j].speedx = 0.005;
+                enemyred[j].size_enemy = 0;
                 player.score += 2;
                 shootQ.live = false;
             }
@@ -927,44 +961,48 @@ void ChangeColor(int *text_color, struct Player &player, struct Boss boss[], int
 
 //funcao para iniciar boss
 void InitBoss(struct Boss boss[], int *num_boss, int letra)
-{int j;
-for(j=0; j < *num_boss; j++)
 {
-    boss[j].ID = ENEMY;
-    if(letra != 666)
-        boss[j].image = al_load_bitmap("images/boss_1.png");
-    if(letra == 666)
+    int j;
+    for(j=0; j < *num_boss; j++)
     {
-        boss[j].image = al_load_bitmap("images/mussoi.png");
-        boss[j].sample[2] = al_load_sample("sounds/starwars.ogg");
-        boss[j].instance[2] = al_create_sample_instance(boss[j].sample[2]);
-        al_attach_sample_instance_to_mixer(boss[j].instance[2], al_get_default_mixer());
+        boss[j].ID = ENEMY;
+        if(letra != 666)
+            boss[j].image = al_load_bitmap("images/boss_1.png");
+        if(letra == 666)
+        {
+            boss[j].image = al_load_bitmap("images/mussoi.png");
+            boss[j].sample[2] = al_load_sample("sounds/starwars.ogg");
+            boss[j].instance[2] = al_create_sample_instance(boss[j].sample[2]);
+            al_attach_sample_instance_to_mixer(boss[j].instance[2], al_get_default_mixer());
+            al_set_sample_instance_gain(boss[j].instance[2], 3);
+        }
+        boss[j].x = back_x;
+        boss[j].y = back_y;
+        boss[j].real_y = boss[j].y;
+        boss[j].speed = 0.1;
+        boss[j].size_boss = 0;
+        boss[j].width = al_get_bitmap_width(boss[j].image);
+        boss[j].height = al_get_bitmap_height(boss[j].image);
+        boss[j].velx = 0.5;
+        boss[j].vely = 15;
+        boss[j].boundx = 0;
+        boss[j].boundy = 0;
+        boss[j].real_size_boss = 100;
+        boss[j].lives = 20;
+        boss[j].alive = false;
+        boss[j].lived = false;
+        boss[j].instance_played = false;
+
+        boss[j].sample[0] = al_load_sample("sounds/songboss.ogg");
+        boss[j].sample[1] = al_load_sample("sounds/songboss2.ogg");
+        boss[j].instance[0] = al_create_sample_instance(boss[j].sample[0]);
+        boss[j].instance[1] = al_create_sample_instance(boss[j].sample[1]);
+        al_attach_sample_instance_to_mixer(boss[j].instance[0], al_get_default_mixer());
+        al_attach_sample_instance_to_mixer(boss[j].instance[1], al_get_default_mixer());
+        al_set_sample_instance_gain(boss[j].instance[0], 2);
+        al_set_sample_instance_gain(boss[j].instance[1], 2);
+
     }
-    boss[j].x = back_x;
-    boss[j].y = back_y;
-    boss[j].real_y = boss[j].y;
-    boss[j].speed = 0.1;
-    boss[j].size_boss = 0;
-    boss[j].width = al_get_bitmap_width(boss[j].image);
-    boss[j].height = al_get_bitmap_height(boss[j].image);
-    boss[j].velx = 0.5;
-    boss[j].vely = 15;
-    boss[j].boundx = 0;
-    boss[j].boundy = 0;
-    boss[j].real_size_boss = 100;
-    boss[j].lives = 20;
-    boss[j].alive = false;
-    boss[j].lived = false;
-    boss[j].instance_played = false;
-
-    boss[j].sample[0] = al_load_sample("sounds/songboss.ogg");
-    boss[j].sample[1] = al_load_sample("sounds/songboss2.ogg");
-    boss[j].instance[0] = al_create_sample_instance(boss[j].sample[0]);
-    boss[j].instance[1] = al_create_sample_instance(boss[j].sample[1]);
-    al_attach_sample_instance_to_mixer(boss[j].instance[0], al_get_default_mixer());
-    al_attach_sample_instance_to_mixer(boss[j].instance[1], al_get_default_mixer());
-
-}
 }
 
 //funcao para desenhar boss
@@ -981,7 +1019,8 @@ void DrawBoss(struct Boss boss[], int *num_boss, struct Player &player)
 }
 
 //funcao para atualizar boss
-void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_enemyred, struct Enemy_blue enemyblue[], int *num_enemyblue, int letra)
+void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[],
+                int *num_enemyred, struct Enemy_blue enemyblue[], int *num_enemyblue, int letra)
 {
     *num_boss = 0;
     if(player.score > 20 && boss[0].lived == false)
@@ -1053,42 +1092,41 @@ void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player
     }
 }
 
-void BossSample(struct Boss boss[], int *num_boss, int letra, ALLEGRO_SAMPLE_ID *musica1id, ALLEGRO_SAMPLE *musica1, ALLEGRO_SAMPLE_ID *musica666id, ALLEGRO_SAMPLE *musica666)
+void BossSample(struct Boss boss[], int *num_boss, int letra, ALLEGRO_SAMPLE_ID *musica1id, ALLEGRO_SAMPLE *musica1,
+                ALLEGRO_SAMPLE_ID *musica666id, ALLEGRO_SAMPLE *musica666)
 {
     int j;
     for(j=0; j < *num_boss; j++)
     {
         if(boss[j].alive)
         {
-            if(boss[j].instance_played == false && letra == 4)
+            if(boss[j].instance_played == false && letra == 3)
             {
                 al_play_sample_instance(boss[j].instance[0]);
                 boss[j].instance_played = true;
             }
-            if(letra == 2)
+            if(letra == 1)
             {
-                al_stop_sample(musica1id);
                 al_play_sample_instance(boss[j].instance[1]);
             }
-             if(letra == 666)
+            if(letra == 666)
             {
-                al_stop_sample(musica666id);
+                //al_stop_sample(musica666id);
                 al_play_sample_instance(boss[j].instance[2]);
             }
         }
         if(boss[j].lived && !boss[j].instance_played)
         {
-            if(letra == 2)
+            switch(letra)
             {
+            case 1:
+                boss[j].instance_played = true;
                 al_stop_sample_instance(boss[j].instance[1]);
-                al_play_sample(musica1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, musica1id);
-                boss[j].instance_played = true;
-            }
-            if(letra == 666)
-            {
+                break;
+            case 666:
                 al_stop_sample_instance(boss[j].instance[2]);
-                al_play_sample(musica666, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, musica666id);
                 boss[j].instance_played = true;
+                break;
             }
         }
     }
@@ -1152,293 +1190,302 @@ void ShootColisionBoss(struct Shoot &shootW, struct Shoot &shootQ, struct Boss b
     }
 }
 
-void InitBackground0(struct Sprite &background0, ALLEGRO_SAMPLE *musica0, int letra)
+void InitBackground0(struct Sprite &background0, ALLEGRO_SAMPLE *musica0, ALLEGRO_SAMPLE *musica666, ALLEGRO_SAMPLE_ID *musica666id, int letra)
 {
-        background0.frame_atual = 0;
-        background0.frame_count = 0;
-        background0.frame_delay = 2;
-        background0.frame_max = 12;
+    background0.frame_atual = 0;
+    background0.frame_count = 0;
+    background0.frame_delay = 2;
+    background0.frame_max = 12;
 
-        background0.image[0] = al_load_bitmap("images/background/back_0.png");
-        background0.image[1] = al_load_bitmap("images/background/back_2.png");
-        background0.image[2] = al_load_bitmap("images/background/back_4.png");
-        background0.image[3] = al_load_bitmap("images/background/back_6.png");
-        background0.image[4] = al_load_bitmap("images/background/back_8.png");
-        background0.image[5] = al_load_bitmap("images/background/back_10.png");
-        background0.image[6] = al_load_bitmap("images/background/back_12.png");
-        background0.image[7] = al_load_bitmap("images/background/back_14.png");
-        background0.image[8] = al_load_bitmap("images/background/back_16.png");
-        background0.image[9] = al_load_bitmap("images/background/back_18.png");
-        background0.image[10] = al_load_bitmap("images/background/back_20.png");
-        background0.image[11] = al_load_bitmap("images/background/back_22.png");
+    background0.image[0] = al_load_bitmap("images/background/back_0.png");
+    background0.image[1] = al_load_bitmap("images/background/back_2.png");
+    background0.image[2] = al_load_bitmap("images/background/back_4.png");
+    background0.image[3] = al_load_bitmap("images/background/back_6.png");
+    background0.image[4] = al_load_bitmap("images/background/back_8.png");
+    background0.image[5] = al_load_bitmap("images/background/back_10.png");
+    background0.image[6] = al_load_bitmap("images/background/back_12.png");
+    background0.image[7] = al_load_bitmap("images/background/back_14.png");
+    background0.image[8] = al_load_bitmap("images/background/back_16.png");
+    background0.image[9] = al_load_bitmap("images/background/back_18.png");
+    background0.image[10] = al_load_bitmap("images/background/back_20.png");
+    background0.image[11] = al_load_bitmap("images/background/back_22.png");
 
-        background0.image[12] = al_load_bitmap("images/telas/tela-inicio0.png");
-        background0.image[13] = al_load_bitmap("images/telas/tela-instru0.png");
-        background0.image[14] = al_load_bitmap("images/telas/tela-final0.png");
+    background0.image[12] = al_load_bitmap("images/telas/tela-inicio0.png");
+    background0.image[13] = al_load_bitmap("images/telas/tela-instru0.png");
+    background0.image[14] = al_load_bitmap("images/telas/tela-final0.png");
+    background0.image[15] = al_load_bitmap("images/reprovado.png");
 
-        //carregar musica referente
-        switch (letra) {
-            case 0:
-            musica0 = al_load_sample("sounds/topgearsoundtrack.ogg");
-            break;
-            case 666:
-            musica0 = al_load_sample("sounds/treefriends.ogg");
-        }
-
+    //carregar musica referente
+    switch (letra)
+    {
+    case 0:
+        musica0 = al_load_sample("sounds/topgearsoundtrack.ogg");
+        al_play_sample(musica0, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
+        break;
+    case 666:
+        musica666 = al_load_sample("sounds/treefriends.ogg");
+        al_play_sample(musica666, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, musica666id);
+    }
 }
 
 void DrawBackground0(struct Sprite &background0)
 {
-        if(++background0.frame_count >= background0.frame_delay)
-        {
-            if(++background0.frame_atual >= background0.frame_max)
-                background0.frame_atual = 0;
-            background0.frame_count = 0;
-        }
+    if(++background0.frame_count >= background0.frame_delay)
+    {
+        if(++background0.frame_atual >= background0.frame_max)
+            background0.frame_atual = 0;
+        background0.frame_count = 0;
+    }
 
-        al_draw_bitmap(background0.image[background0.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    al_draw_bitmap(background0.image[background0.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
 }
 
-void InitBackground1(struct Sprite &background1, ALLEGRO_SAMPLE *musica1)
+void InitBackground1(struct Sprite &background1, ALLEGRO_SAMPLE *musica1, ALLEGRO_SAMPLE_ID *musica1id)
 {
-        background1.frame_atual = 0;
-        background1.frame_count = 0;
-        background1.frame_delay = 5;
-        background1.frame_max = 11;
+    background1.frame_atual = 0;
+    background1.frame_count = 0;
+    background1.frame_delay = 5;
+    background1.frame_max = 11;
 
-        background1.image[0] = al_load_bitmap("images/background/back5/back5 (1).png");
-        background1.image[1] = al_load_bitmap("images/background/back5/back5 (3).png");
-        background1.image[2] = al_load_bitmap("images/background/back5/back5 (5).png");
-        background1.image[3] = al_load_bitmap("images/background/back5/back5 (7).png");
-        background1.image[4] = al_load_bitmap("images/background/back5/back5 (9).png");
-        background1.image[5] = al_load_bitmap("images/background/back5/back5 (11).png");
-        background1.image[6] = al_load_bitmap("images/background/back5/back5 (13).png");
-        background1.image[7] = al_load_bitmap("images/background/back5/back5 (15).png");
-        background1.image[8] = al_load_bitmap("images/background/back5/back5 (17).png");
-        background1.image[9] = al_load_bitmap("images/background/back5/back5 (19).png");
-        background1.image[10] = al_load_bitmap("images/background/back5/back5 (21).png");
+    background1.image[0] = al_load_bitmap("images/background/back5/back5 (1).png");
+    background1.image[1] = al_load_bitmap("images/background/back5/back5 (3).png");
+    background1.image[2] = al_load_bitmap("images/background/back5/back5 (5).png");
+    background1.image[3] = al_load_bitmap("images/background/back5/back5 (7).png");
+    background1.image[4] = al_load_bitmap("images/background/back5/back5 (9).png");
+    background1.image[5] = al_load_bitmap("images/background/back5/back5 (11).png");
+    background1.image[6] = al_load_bitmap("images/background/back5/back5 (13).png");
+    background1.image[7] = al_load_bitmap("images/background/back5/back5 (15).png");
+    background1.image[8] = al_load_bitmap("images/background/back5/back5 (17).png");
+    background1.image[9] = al_load_bitmap("images/background/back5/back5 (19).png");
+    background1.image[10] = al_load_bitmap("images/background/back5/back5 (21).png");
 
-        background1.image[11] = al_load_bitmap("images/telas/tela-inicio1.png");
-        background1.image[13] = al_load_bitmap("images/telas/tela-final1.png");
-        //carregar musica referente
-        musica1 = al_load_sample("sounds/nirvana.ogg");
+    background1.image[11] = al_load_bitmap("images/telas/tela-inicio1.png");
+    background1.image[13] = al_load_bitmap("images/telas/tela-final1.png");
+    //carregar musica referente
+    musica1 = al_load_sample("sounds/nirvana.ogg");
+    al_play_sample(musica1, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, musica1id);
 }
 
 void DrawBackground1(struct Sprite &background1)
 {
-        if(++background1.frame_count >= background1.frame_delay)
-        {
-            if(++background1.frame_atual >= background1.frame_max)
-                background1.frame_atual = 0;
-            background1.frame_count = 0;
-        }
+    if(++background1.frame_count >= background1.frame_delay)
+    {
+        if(++background1.frame_atual >= background1.frame_max)
+            background1.frame_atual = 0;
+        background1.frame_count = 0;
+    }
 
-        al_draw_bitmap(background1.image[background1.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    al_draw_bitmap(background1.image[background1.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
 }
 
 void InitBackground2(struct Sprite &background2, ALLEGRO_SAMPLE *musica2)
 {
-        background2.frame_atual = 0;
-        background2.frame_count = 0;
-        background2.frame_delay = 5;
-        background2.frame_max = 12;
+    background2.frame_atual = 0;
+    background2.frame_count = 0;
+    background2.frame_delay = 5;
+    background2.frame_max = 12;
 
-        background2.image[0] = al_load_bitmap("images/background/back2/back2 (1).png");
-        background2.image[1] = al_load_bitmap("images/background/back2/back2 (3).png");
-        background2.image[2] = al_load_bitmap("images/background/back2/back2 (5).png");
-        background2.image[3] = al_load_bitmap("images/background/back2/back2 (7).png");
-        background2.image[4] = al_load_bitmap("images/background/back2/back2 (9).png");
-        background2.image[5] = al_load_bitmap("images/background/back2/back2 (11).png");
-        background2.image[6] = al_load_bitmap("images/background/back2/back2 (13).png");
-        background2.image[7] = al_load_bitmap("images/background/back2/back2 (15).png");
-        background2.image[8] = al_load_bitmap("images/background/back2/back2 (17).png");
-        background2.image[9] = al_load_bitmap("images/background/back2/back2 (19).png");
-        background2.image[10] = al_load_bitmap("images/background/back2/back2 (21).png");
-        background2.image[11] = al_load_bitmap("images/background/back2/back2 (23).png");
+    background2.image[0] = al_load_bitmap("images/background/back2/back2 (1).png");
+    background2.image[1] = al_load_bitmap("images/background/back2/back2 (3).png");
+    background2.image[2] = al_load_bitmap("images/background/back2/back2 (5).png");
+    background2.image[3] = al_load_bitmap("images/background/back2/back2 (7).png");
+    background2.image[4] = al_load_bitmap("images/background/back2/back2 (9).png");
+    background2.image[5] = al_load_bitmap("images/background/back2/back2 (11).png");
+    background2.image[6] = al_load_bitmap("images/background/back2/back2 (13).png");
+    background2.image[7] = al_load_bitmap("images/background/back2/back2 (15).png");
+    background2.image[8] = al_load_bitmap("images/background/back2/back2 (17).png");
+    background2.image[9] = al_load_bitmap("images/background/back2/back2 (19).png");
+    background2.image[10] = al_load_bitmap("images/background/back2/back2 (21).png");
+    background2.image[11] = al_load_bitmap("images/background/back2/back2 (23).png");
 
-        background2.image[12] = al_load_bitmap("images/telas/tela-inicio2-3.png");
-        background2.image[14] = al_load_bitmap("images/telas/tela-final2-3.png");
-        //carregar musica referente
-        musica2 = al_load_sample("sounds/lucy.ogg");
+    background2.image[12] = al_load_bitmap("images/telas/tela-inicio2-3.png");
+    background2.image[14] = al_load_bitmap("images/telas/tela-final2-3.png");
+    //carregar musica referente
+    musica2 = al_load_sample("sounds/lucy.ogg");
+    al_play_sample(musica2, 1.5, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 
 void DrawBackground2(struct Sprite &background2)
 {
-        if(++background2.frame_count >= background2.frame_delay)
-        {
-            if(++background2.frame_atual >= background2.frame_max)
-                background2.frame_atual = 0;
-            background2.frame_count = 0;
-        }
+    if(++background2.frame_count >= background2.frame_delay)
+    {
+        if(++background2.frame_atual >= background2.frame_max)
+            background2.frame_atual = 0;
+        background2.frame_count = 0;
+    }
 
-        al_draw_bitmap(background2.image[background2.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    al_draw_bitmap(background2.image[background2.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
 }
 
-void InitBackground3(struct Sprite &background3, ALLEGRO_SAMPLE *musica3)
+void InitBackground3(struct Sprite &background3, ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id)
 {
-        background3.frame_atual = 0;
-        background3.frame_count = 0;
-        background3.frame_delay = 5;
-        background3.frame_max = 11;
+    background3.frame_atual = 0;
+    background3.frame_count = 0;
+    background3.frame_delay = 5;
+    background3.frame_max = 11;
 
-        background3.image[0] = al_load_bitmap("images/background/back7/back7 (2).png");
-        background3.image[1] = al_load_bitmap("images/background/back7/back7 (4).png");
-        background3.image[2] = al_load_bitmap("images/background/back7/back7 (6).png");
-        background3.image[3] = al_load_bitmap("images/background/back7/back7 (8).png");
-        background3.image[4] = al_load_bitmap("images/background/back7/back7 (10).png");
-        background3.image[5] = al_load_bitmap("images/background/back7/back7 (12).png");
-        background3.image[6] = al_load_bitmap("images/background/back7/back7 (14).png");
-        background3.image[7] = al_load_bitmap("images/background/back7/back7 (16).png");
-        background3.image[8] = al_load_bitmap("images/background/back7/back7 (18).png");
-        background3.image[9] = al_load_bitmap("images/background/back7/back7 (20).png");
-        background3.image[10] = al_load_bitmap("images/background/back7/back7 (22).png");
+    background3.image[0] = al_load_bitmap("images/background/back7/back7 (2).png");
+    background3.image[1] = al_load_bitmap("images/background/back7/back7 (4).png");
+    background3.image[2] = al_load_bitmap("images/background/back7/back7 (6).png");
+    background3.image[3] = al_load_bitmap("images/background/back7/back7 (8).png");
+    background3.image[4] = al_load_bitmap("images/background/back7/back7 (10).png");
+    background3.image[5] = al_load_bitmap("images/background/back7/back7 (12).png");
+    background3.image[6] = al_load_bitmap("images/background/back7/back7 (14).png");
+    background3.image[7] = al_load_bitmap("images/background/back7/back7 (16).png");
+    background3.image[8] = al_load_bitmap("images/background/back7/back7 (18).png");
+    background3.image[9] = al_load_bitmap("images/background/back7/back7 (20).png");
+    background3.image[10] = al_load_bitmap("images/background/back7/back7 (22).png");
 
-        background3.image[11] = al_load_bitmap("images/telas/tela-inicio2-3.png");
-        background3.image[13] = al_load_bitmap("images/telas/tela-final2-3.png");
-        //carregar musica referente
-        musica3 = al_load_sample("sounds/immigrant.ogg");
+    background3.image[11] = al_load_bitmap("images/telas/tela-inicio2-3.png");
+    background3.image[13] = al_load_bitmap("images/telas/tela-final2-3.png");
+    //carregar musica referente
+    musica3 = al_load_sample("sounds/immigrant.ogg");
+    al_play_sample(musica3, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, musica3id);
 }
 
 void DrawBackground3(struct Sprite &background3)
 {
-        if(++background3.frame_count >= background3.frame_delay)
-        {
-            if(++background3.frame_atual >= background3.frame_max)
-                background3.frame_atual = 0;
-            background3.frame_count = 0;
-        }
+    if(++background3.frame_count >= background3.frame_delay)
+    {
+        if(++background3.frame_atual >= background3.frame_max)
+            background3.frame_atual = 0;
+        background3.frame_count = 0;
+    }
 
-        al_draw_bitmap(background3.image[background3.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    al_draw_bitmap(background3.image[background3.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
 }
 
 void InitBackground4(struct Sprite &background4, ALLEGRO_SAMPLE *musica4)
 {
-        background4.frame_atual = 0;
-        background4.frame_count = 0;
-        background4.frame_delay = 5;
-        background4.frame_max = 11;
+    background4.frame_atual = 0;
+    background4.frame_count = 0;
+    background4.frame_delay = 5;
+    background4.frame_max = 11;
 
-        background4.image[0] = al_load_bitmap("images/background/back8/back8 (1).png");
-        background4.image[1] = al_load_bitmap("images/background/back8/back8 (3).png");
-        background4.image[2] = al_load_bitmap("images/background/back8/back8 (5).png");
-        background4.image[3] = al_load_bitmap("images/background/back8/back8 (7).png");
-        background4.image[4] = al_load_bitmap("images/background/back8/back8 (9).png");
-        background4.image[5] = al_load_bitmap("images/background/back8/back8 (11).png");
-        background4.image[6] = al_load_bitmap("images/background/back8/back8 (13).png");
-        background4.image[7] = al_load_bitmap("images/background/back8/back8 (15).png");
-        background4.image[8] = al_load_bitmap("images/background/back8/back8 (17).png");
-        background4.image[9] = al_load_bitmap("images/background/back8/back8 (19).png");
-        background4.image[10] = al_load_bitmap("images/background/back8/back8 (21).png");
+    background4.image[0] = al_load_bitmap("images/background/back8/back8 (1).png");
+    background4.image[1] = al_load_bitmap("images/background/back8/back8 (3).png");
+    background4.image[2] = al_load_bitmap("images/background/back8/back8 (5).png");
+    background4.image[3] = al_load_bitmap("images/background/back8/back8 (7).png");
+    background4.image[4] = al_load_bitmap("images/background/back8/back8 (9).png");
+    background4.image[5] = al_load_bitmap("images/background/back8/back8 (11).png");
+    background4.image[6] = al_load_bitmap("images/background/back8/back8 (13).png");
+    background4.image[7] = al_load_bitmap("images/background/back8/back8 (15).png");
+    background4.image[8] = al_load_bitmap("images/background/back8/back8 (17).png");
+    background4.image[9] = al_load_bitmap("images/background/back8/back8 (19).png");
+    background4.image[10] = al_load_bitmap("images/background/back8/back8 (21).png");
 
-        background4.image[11] = al_load_bitmap("images/telas/tela-inicio4.png");
-        background4.image[13] = al_load_bitmap("images/telas/tela-final4.png");
-        //carregar musica referente
-        musica4 = al_load_sample("sounds/melancholy.ogg");
+    background4.image[11] = al_load_bitmap("images/telas/tela-inicio4.png");
+    background4.image[13] = al_load_bitmap("images/telas/tela-final4.png");
+    //carregar musica referente
+    musica4 = al_load_sample("sounds/melancholy.ogg");
+    al_play_sample(musica4, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 
 void DrawBackground4(struct Sprite &background4)
 {
-        if(++background4.frame_count >= background4.frame_delay)
-        {
-            if(++background4.frame_atual >= background4.frame_max)
-                background4.frame_atual = 0;
-            background4.frame_count = 0;
-        }
+    if(++background4.frame_count >= background4.frame_delay)
+    {
+        if(++background4.frame_atual >= background4.frame_max)
+            background4.frame_atual = 0;
+        background4.frame_count = 0;
+    }
 
-        al_draw_bitmap(background4.image[background4.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    al_draw_bitmap(background4.image[background4.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
 }
 
 void InitBackground5(struct Sprite &background5, ALLEGRO_SAMPLE *musica5)
 {
-        background5.frame_atual = 0;
-        background5.frame_count = 0;
-        background5.frame_delay = 5;
-        background5.frame_max = 20;
+    background5.frame_atual = 0;
+    background5.frame_count = 0;
+    background5.frame_delay = 5;
+    background5.frame_max = 20;
 
-        background5.image[0] = al_load_bitmap("images/background/back6/back6 (1).png");
-        background5.image[1] = al_load_bitmap("images/background/back6/back6 (3).png");
-        background5.image[2] = al_load_bitmap("images/background/back6/back6 (5).png");
-        background5.image[3] = al_load_bitmap("images/background/back6/back6 (7).png");
-        background5.image[4] = al_load_bitmap("images/background/back6/back6 (9).png");
-        background5.image[5] = al_load_bitmap("images/background/back6/back6 (11).png");
-        background5.image[6] = al_load_bitmap("images/background/back6/back6 (13).png");
-        background5.image[7] = al_load_bitmap("images/background/back6/back6 (15).png");
-        background5.image[8] = al_load_bitmap("images/background/back6/back6 (17).png");
-        background5.image[9] = al_load_bitmap("images/background/back6/back6 (19).png");
-        background5.image[10] = al_load_bitmap("images/background/back6/back6 (21).png");
-        background5.image[11] = al_load_bitmap("images/background/back6/back6 (23).png");
-        background5.image[12] = al_load_bitmap("images/background/back6/back6 (25).png");
-        background5.image[13] = al_load_bitmap("images/background/back6/back6 (27).png");
-        background5.image[14] = al_load_bitmap("images/background/back6/back6 (29).png");
-        background5.image[15] = al_load_bitmap("images/background/back6/back6 (31).png");
-        background5.image[16] = al_load_bitmap("images/background/back6/back6 (33).png");
-        background5.image[17] = al_load_bitmap("images/background/back6/back6 (35).png");
-        background5.image[18] = al_load_bitmap("images/background/back6/back6 (37).png");
-        background5.image[19] = al_load_bitmap("images/background/back6/back6 (39).png");
+    background5.image[0] = al_load_bitmap("images/background/back6/back6 (1).png");
+    background5.image[1] = al_load_bitmap("images/background/back6/back6 (3).png");
+    background5.image[2] = al_load_bitmap("images/background/back6/back6 (5).png");
+    background5.image[3] = al_load_bitmap("images/background/back6/back6 (7).png");
+    background5.image[4] = al_load_bitmap("images/background/back6/back6 (9).png");
+    background5.image[5] = al_load_bitmap("images/background/back6/back6 (11).png");
+    background5.image[6] = al_load_bitmap("images/background/back6/back6 (13).png");
+    background5.image[7] = al_load_bitmap("images/background/back6/back6 (15).png");
+    background5.image[8] = al_load_bitmap("images/background/back6/back6 (17).png");
+    background5.image[9] = al_load_bitmap("images/background/back6/back6 (19).png");
+    background5.image[10] = al_load_bitmap("images/background/back6/back6 (21).png");
+    background5.image[11] = al_load_bitmap("images/background/back6/back6 (23).png");
+    background5.image[12] = al_load_bitmap("images/background/back6/back6 (25).png");
+    background5.image[13] = al_load_bitmap("images/background/back6/back6 (27).png");
+    background5.image[14] = al_load_bitmap("images/background/back6/back6 (29).png");
+    background5.image[15] = al_load_bitmap("images/background/back6/back6 (31).png");
+    background5.image[16] = al_load_bitmap("images/background/back6/back6 (33).png");
+    background5.image[17] = al_load_bitmap("images/background/back6/back6 (35).png");
+    background5.image[18] = al_load_bitmap("images/background/back6/back6 (37).png");
+    background5.image[19] = al_load_bitmap("images/background/back6/back6 (39).png");
 
-        background5.image[20] = al_load_bitmap("images/telas/tela-inicio5.png");
-        background5.image[22] = al_load_bitmap("images/telas/tela-final5.png");
-        //carregar musica referente
-        musica5 = al_load_sample("sounds/starwars.ogg");
+    background5.image[20] = al_load_bitmap("images/telas/tela-inicio5.png");
+    background5.image[22] = al_load_bitmap("images/telas/tela-final5.png");
+    //carregar musica referente
+    musica5 = al_load_sample("sounds/starwars.ogg");
+    al_play_sample(musica5, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 
 void DrawBackground5(struct Sprite &background5)
 {
-        if(++background5.frame_count >= background5.frame_delay)
-        {
-            if(++background5.frame_atual >= background5.frame_max)
-                background5.frame_atual = 0;
-            background5.frame_count = 0;
-        }
+    if(++background5.frame_count >= background5.frame_delay)
+    {
+        if(++background5.frame_atual >= background5.frame_max)
+            background5.frame_atual = 0;
+        background5.frame_count = 0;
+    }
 
-        al_draw_bitmap(background5.image[background5.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    al_draw_bitmap(background5.image[background5.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
 }
 
 void InitBackground6(struct Sprite &background6, ALLEGRO_SAMPLE *musica6)
 {
-        background6.frame_atual = 0;
-        background6.frame_count = 0;
-        background6.frame_delay = 5;
-        background6.frame_max = 21;
+    background6.frame_atual = 0;
+    background6.frame_count = 0;
+    background6.frame_delay = 5;
+    background6.frame_max = 21;
 
-        background6.image[0] = al_load_bitmap("images/background/back9/back9 (1).png");
-        background6.image[1] = al_load_bitmap("images/background/back9/back9 (5).png");
-        background6.image[2] = al_load_bitmap("images/background/back9/back9 (10).png");
-        background6.image[3] = al_load_bitmap("images/background/back9/back9 (15).png");
-        background6.image[4] = al_load_bitmap("images/background/back9/back9 (20).png");
-        background6.image[5] = al_load_bitmap("images/background/back9/back9 (25).png");
-        background6.image[6] = al_load_bitmap("images/background/back9/back9 (30).png");
-        background6.image[7] = al_load_bitmap("images/background/back9/back9 (35).png");
-        background6.image[8] = al_load_bitmap("images/background/back9/back9 (40).png");
-        background6.image[9] = al_load_bitmap("images/background/back9/back9 (45).png");
-        background6.image[10] = al_load_bitmap("images/background/back9/back9 (50).png");
-        background6.image[11] = al_load_bitmap("images/background/back9/back9 (55).png");
-        background6.image[12] = al_load_bitmap("images/background/back9/back9 (60).png");
-        background6.image[13] = al_load_bitmap("images/background/back9/back9 (65).png");
-        background6.image[14] = al_load_bitmap("images/background/back9/back9 (70).png");
-        background6.image[15] = al_load_bitmap("images/background/back9/back9 (75).png");
-        background6.image[16] = al_load_bitmap("images/background/back9/back9 (80).png");
-        background6.image[17] = al_load_bitmap("images/background/back9/back9 (85).png");
-        background6.image[18] = al_load_bitmap("images/background/back9/back9 (90).png");
-        background6.image[19] = al_load_bitmap("images/background/back9/back9 (95).png");
-        background6.image[20] = al_load_bitmap("images/background/back9/back9 (99).png");
+    background6.image[0] = al_load_bitmap("images/background/back9/back9 (1).png");
+    background6.image[1] = al_load_bitmap("images/background/back9/back9 (5).png");
+    background6.image[2] = al_load_bitmap("images/background/back9/back9 (10).png");
+    background6.image[3] = al_load_bitmap("images/background/back9/back9 (15).png");
+    background6.image[4] = al_load_bitmap("images/background/back9/back9 (20).png");
+    background6.image[5] = al_load_bitmap("images/background/back9/back9 (25).png");
+    background6.image[6] = al_load_bitmap("images/background/back9/back9 (30).png");
+    background6.image[7] = al_load_bitmap("images/background/back9/back9 (35).png");
+    background6.image[8] = al_load_bitmap("images/background/back9/back9 (40).png");
+    background6.image[9] = al_load_bitmap("images/background/back9/back9 (45).png");
+    background6.image[10] = al_load_bitmap("images/background/back9/back9 (50).png");
+    background6.image[11] = al_load_bitmap("images/background/back9/back9 (55).png");
+    background6.image[12] = al_load_bitmap("images/background/back9/back9 (60).png");
+    background6.image[13] = al_load_bitmap("images/background/back9/back9 (65).png");
+    background6.image[14] = al_load_bitmap("images/background/back9/back9 (70).png");
+    background6.image[15] = al_load_bitmap("images/background/back9/back9 (75).png");
+    background6.image[16] = al_load_bitmap("images/background/back9/back9 (80).png");
+    background6.image[17] = al_load_bitmap("images/background/back9/back9 (85).png");
+    background6.image[18] = al_load_bitmap("images/background/back9/back9 (90).png");
+    background6.image[19] = al_load_bitmap("images/background/back9/back9 (95).png");
+    background6.image[20] = al_load_bitmap("images/background/back9/back9 (99).png");
 
-        background6.image[21] = al_load_bitmap("images/telas/tela-inicio6.png");
-        background6.image[23] = al_load_bitmap("images/telas/tela-final6.png");
-        //carregar musica referente
-        musica6 = al_load_sample("sounds/superman.ogg");
+    background6.image[21] = al_load_bitmap("images/telas/tela-inicio6.png");
+    background6.image[23] = al_load_bitmap("images/telas/tela-final6.png");
+    //carregar musica referente
+    musica6 = al_load_sample("sounds/superman.ogg");
+    al_play_sample(musica6, 1, 0, 1, ALLEGRO_PLAYMODE_LOOP, NULL);
 }
 
 void DrawBackground6(struct Sprite &background6)
 {
-        if(++background6.frame_count >= background6.frame_delay)
-        {
-            if(++background6.frame_atual >= background6.frame_max)
-                background6.frame_atual = 0;
-            background6.frame_count = 0;
-        }
+    if(++background6.frame_count >= background6.frame_delay)
+    {
+        if(++background6.frame_atual >= background6.frame_max)
+            background6.frame_atual = 0;
+        background6.frame_count = 0;
+    }
 
-        al_draw_bitmap(background6.image[background6.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
+    al_draw_bitmap(background6.image[background6.frame_atual], 0, 0, ALLEGRO_ALIGN_CENTRE);
 }
 
 
@@ -1454,67 +1501,68 @@ void InitEnemyredSprite(struct Sprite &enemyred_sprite)
 
 void OpcaoBackground(int &letra)
 {
-    printf("Digite o numero da opcao e tecle Enter\n 0 - Normal\n 1 - Tunel de espinhos\n 2 - Terra da Speranza (LSD World) \n 3 - Paz e Amor\n 4 - Luz, luz!\n 5 - Preto no Branco\n 6 - Tudo azul...\n");
+    printf("Digite o numero da opcao e tecle Enter\n 0 - Normal\n 1 - Tunel de espinhos\n 2 - Terra da Speranza (LSD World) \n 3 - Paz e Amor\n 4 - Luz, luz!\n 5 - Noir\n 6 - Alem do Infinito\n");
     scanf("%d", &letra);
 
-    switch(letra){
-        case 0:
+    switch(letra)
+    {
+    case 0:
         WIDTH = 1200;
         HEIGHT = 600;
         back_x = WIDTH/2;
         back_y = HEIGHT/2;
         break;
 
-        case 1:
+    case 1:
         WIDTH = 500;
         HEIGHT = 655;
         back_x = WIDTH*0.3;
         back_y = HEIGHT*0.5;
         break;
 
-        case 2:
+    case 2:
         WIDTH = 400;
         HEIGHT = 500;
         back_x = WIDTH/2;
         back_y = HEIGHT/2;
         break;
 
-        case 3:
+    case 3:
         WIDTH = 400;
         HEIGHT = 500;
         back_x = WIDTH/2;
         back_y = HEIGHT/2;
         break;
 
-        case 4:
+    case 4:
         WIDTH = 500;
         HEIGHT = 500;
         back_x = WIDTH/2;
         back_y = HEIGHT/2;
         break;
 
-        case 5:
+    case 5:
         WIDTH = 500;
         HEIGHT = 711;
         back_x = WIDTH/2;
         back_y = HEIGHT/2;
         break;
 
-        case 6:
+    case 6:
         WIDTH = 400;
         HEIGHT = 400;
         back_x = WIDTH/2;
         back_y = HEIGHT/2;
         break;
 
-        case 666:
+    case 666:
         WIDTH = 1200;
         HEIGHT = 600;
         back_x = WIDTH/2;
         back_y = HEIGHT/2;
         break;
 
-        default:
+    default:
         printf("Incorreto!");
         break;
     } //final do switch

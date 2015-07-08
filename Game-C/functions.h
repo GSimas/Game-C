@@ -9,7 +9,13 @@ void DrawScientist(Player &player, SpriteScientist &scientist, bool *LEFT, bool 
 void PlayerJump(Player &player, bool *UP);
 void PlayerRight(Player &player, bool *RIGHT, struct SpriteScientist &scientist);
 void PlayerLeft(Player &player, bool *LEFT);
-void ResetPlayer(int *tela, Player &player, Enemy_red enemyred[], int *num_enemyred, Enemy_blue enemyblue[], int *num_enemyblue, Obstacle &obstacle, Boss boss[], int *num_boss, int *text_color, ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id, int letra);
+void ResetPlayer(int *tela, Player &player, Enemy_red enemyred[], int *num_enemyred,
+                 Enemy_blue enemyblue[], int *num_enemyblue, Obstacle &obstacle,
+                 Boss boss[], int *num_boss, int *text_color,
+                 ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id,
+                 ALLEGRO_SAMPLE *musica666, ALLEGRO_SAMPLE_ID *musica666id,
+                 int letra, bool *UP, bool *RIGHT, bool *LEFT, bool *Q, bool *W, bool *E);
+void ResetKeys(struct Player &player, bool *UP, bool *RIGHT, bool *LEFT, bool *Q, bool *W, bool *E);
 void TransportPlayer(Player &player);
 
 //Funções shootQ
@@ -47,8 +53,11 @@ void PlayerColisionEnemyBlue(struct Player &player, struct Enemy_blue enemyblue[
 //funções Boss
 void InitBoss(struct Boss boss[], int *num_boss, int letra);
 void DrawBoss(struct Boss boss[], int *num_boss, struct Player &player);
-void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player, struct Enemy_red enemyred[], int *num_red, struct Enemy_blue enemyblue[], int *num_blue, int letra);
-void BossSample(struct Boss boss[], int *num_boss, int letra, ALLEGRO_SAMPLE_ID *musica1id, ALLEGRO_SAMPLE *musica1, ALLEGRO_SAMPLE_ID *musica666id, ALLEGRO_SAMPLE *musica666);
+void UpdateBoss(struct Boss boss[], int *num_boss, int *text_boss, struct Player &player,
+                struct Enemy_red enemyred[], int *num_red, struct Enemy_blue enemyblue[],
+                int *num_blue, int letra);
+void BossSample(struct Boss boss[], int *num_boss, int letra, ALLEGRO_SAMPLE_ID *musica1id, ALLEGRO_SAMPLE *musica1,
+                ALLEGRO_SAMPLE_ID *musica666id, ALLEGRO_SAMPLE *musica666);
 void PlayerColisionBoss(struct Player &player, struct Boss boss[], int *num_boss);
 void ShootColisionBoss(struct Shoot &shootW, struct Shoot &shootQ, struct Boss boss[], int *num_boss, struct Player &player);
 
@@ -64,13 +73,14 @@ void DrawText(ALLEGRO_FONT *title_font, ALLEGRO_FONT *medium_font, Player &playe
 
 //funcoes para background
 void OpcaoBackground(int &letra);
-void InitBackground0(struct Sprite &background0, ALLEGRO_SAMPLE *musica0, int letra);
+void InitBackground0(struct Sprite &background0, ALLEGRO_SAMPLE *musica0,
+                     ALLEGRO_SAMPLE *musica666, ALLEGRO_SAMPLE_ID *musica666id, int letra);
 void DrawBackground0(struct Sprite &background0);
-void InitBackground1(struct Sprite &background1, ALLEGRO_SAMPLE *musica1);
+void InitBackground1(struct Sprite &background1, ALLEGRO_SAMPLE *musica1, ALLEGRO_SAMPLE_ID *musica1id);
 void DrawBackground1(struct Sprite &background1);
 void InitBackground2(struct Sprite &background2, ALLEGRO_SAMPLE *musica2);
 void DrawBackground2(struct Sprite &background2);
-void InitBackground3(struct Sprite &background3, ALLEGRO_SAMPLE *musica3);
+void InitBackground3(struct Sprite &background3, ALLEGRO_SAMPLE *musica3, ALLEGRO_SAMPLE_ID *musica3id);
 void DrawBackground3(struct Sprite &background3);
 void InitBackground4(struct Sprite &background4, ALLEGRO_SAMPLE *musica4);
 void DrawBackground4(struct Sprite &background4);
