@@ -1,11 +1,13 @@
 # Shock Effect 
 (Game em C com a biblioteca Allegro 5)
 
+> "A vida é muito importante para ser levada a sério" - **Oscar Wilde**
+
 Download: <http://www.mediafire.com/download/ozzghhjga41h455/Game-C.exe>
 
 ![](https://raw.githubusercontent.com/GSimas/Game-C/master/Game-C/images/PromoPoster.png)
 
-##Objetivo
+## Objetivo
 Desenvolver Game (educativo) em Linguagem C com biblioteca Allegro(5), sendo a ordem de metas:
 * 1. Fazer um jogo
 * 2. De preferência (~~educativo~~) divertido
@@ -16,7 +18,7 @@ Desenvolver Game (educativo) em Linguagem C com biblioteca Allegro(5), sendo a o
 * 7. [Vendê-lo para a EA ou.. Publicá-lo na Steam (?)]
 * 8. [Ser um ~~Dong Nguyen~~ programador de sucesso (mesmo?)]
 
-##Descrição geral
+## Descrição geral
 Game Estilo "Endless Running" - ou seja, eternamente sem fim...
 
 * Developed by: GSimas (Gustavo Simas) & Clasr (Clarice ~~Scheiβe~~ Scheibe)
